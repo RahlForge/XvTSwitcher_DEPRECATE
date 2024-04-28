@@ -2,7 +2,9 @@
 using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using XvTSwitcherGUI.Installations;
+using XvTSwitcherGUI.Windows;
 
 namespace XvTSwitcherGUI
 {
@@ -13,6 +15,8 @@ namespace XvTSwitcherGUI
   {
     private const string INSTALLATIONS_JSON = "installations.json";
     private const string BASE_GAME = "BaseGame";
+
+    private List<XvTInstall> Installations = new List<XvTInstall>();
 
     public MainWindow()
     {
@@ -34,6 +38,19 @@ namespace XvTSwitcherGUI
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {     
       File.WriteAllText(INSTALLATIONS_JSON, JsonConvert.SerializeObject(new XvTInstall(BASE_GAME, SourceDirectory.Text)));
+    }
+
+    private void CreateNewInstall_Click(object sender, RoutedEventArgs e)
+    {
+      var dialog = new NewInstall();
+      var result = dialog.ShowDialog() ?? false;
+      
+      if (result)
+      {
+        var newInstall = new XvTInstall(dialog.NewInstallName.Text, $"{SourceDirectory.Text} ({dialog.NewInstallName.Text})");
+        
+      }
+
     }
   }
 }
