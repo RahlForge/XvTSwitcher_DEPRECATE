@@ -59,7 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Installations\IXvTInstall.cs" />
-    <Compile Include="Utilities\Win32Extension.cs" />
     <Compile Include="Installations\XvTInstall.cs" />
     <Compile Include="Installations\XvTInstallations.cs" />
     <Page Include="MainWindow.xaml">
@@ -93,9 +92,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Mods\DDrawFix\ddraw.cfg" />
-    <None Include="Mods\MeleeMissionsPack\3pffa.tie" />
-    <None Include="Mods\MeleeMissionsPack\Melee1.tie" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -104,16 +100,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Mods\60FPSFix\dinput.dll" />
-    <Content Include="Mods\60FPSFix\Hook_60FPS.dll" />
-    <Resource Include="Mods\60FPSFix\hook_60FPS_Readme.txt" />
-    <Content Include="Mods\DDrawFix\ddraw.dll" />
-    <Resource Include="Mods\DDrawFix\LICENSE.txt" />
-    <Resource Include="Mods\DDrawFix\nopowervr.txt" />
-    <Resource Include="Mods\DDrawFix\readme.txt" />
-    <Content Include="Mods\MeleeMissionsPack\MISSION.LST" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
