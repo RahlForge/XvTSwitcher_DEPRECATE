@@ -12,6 +12,7 @@
   <Grid Margin="10">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
@@ -24,6 +25,7 @@
     <Label Content="Source Directory" />
     <TextBox Name="SourceDirectory" Grid.Column="1"/>
     <Button Name="BrowseSourceDirectory" Grid.Column="2" Margin="0,0,0,0" Padding="8,0,8,0" Click="BrowseSourceDirectory_Click">...</Button>
+    <Button Name="CreateNewInstall" Grid.Row="1" Click="CreateNewInstall_Click">Create New Install</Button>
 
     <StackPanel>
       
