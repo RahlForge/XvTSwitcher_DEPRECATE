@@ -69,13 +69,25 @@ namespace XvTSwitcherGUI
 
       if (result)
       {
-        Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-        var newInstallPath = Path.GetFullPath($"{SourceDirectory.Text}/../{STAR_WARS_XVT} ({dialog.NewInstallName.Text})");
-        var sourceDirectory = SourceDirectory.Text;
+        try
+        {
+          Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+          var newInstallPath = Path.GetFullPath($"{SourceDirectory.Text}/../{STAR_WARS_XVT} ({dialog.NewInstallName.Text})");
+          var sourceDirectory = SourceDirectory.Text;
 
-        CopyDirectory.IO.CopyDirectory(sourceDirectory, newInstallPath, true);
-        Installations.Add(new XvTInstall(dialog.NewInstallName.Text, newInstallPath));
-        Mouse.OverrideCursor = null;
+          if (Directory.Exists(newInstallPath))
+          {
+            System.Windows.MessageBox.Show("Cannot create - that installation already exists.");
+            return;
+          }
+
+          CopyDirectory.IO.CopyDirectory(sourceDirectory, newInstallPath, true);
+          Installations.Add(new XvTInstall(dialog.NewInstallName.Text, newInstallPath));
+        }
+        finally
+        {
+          Mouse.OverrideCursor = null;
+        }        
       }
     }
   }
