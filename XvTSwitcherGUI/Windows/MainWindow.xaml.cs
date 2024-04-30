@@ -7,8 +7,9 @@ using XvTSwitcherGUI.Installations;
 using XvTSwitcherGUI.Windows;
 using System.Linq;
 using System.Windows.Input;
+using System.Collections.ObjectModel;
 
-namespace XvTSwitcherGUI
+namespace XvTSwitcherGUI.Windows
 {
   /// <summary>
   /// Interaction logic for MainWindow.xaml
@@ -17,29 +18,18 @@ namespace XvTSwitcherGUI
   {
     private const string STAR_WARS_XVT = "Star Wars - XvT";
     private const string INSTALLATIONS_JSON = "installations.json";
-    private const string BASE_GAME = "BaseGame";
 
-    private List<XvTInstall> Installations = new List<XvTInstall>();
-    private XvTInstall BaseInstall => Installations.FirstOrDefault(o => o.Name == BASE_GAME);
-    private bool HasBaseInstall => BaseInstall != null;
+    private XvTInstallationList InstallationList { get; set; } = new XvTInstallationList();    
 
     public MainWindow()
     {
       InitializeComponent();
 
       if (File.Exists(INSTALLATIONS_JSON) && new FileInfo(INSTALLATIONS_JSON).Length > 0)
-        Installations = JsonConvert.DeserializeObject<List<XvTInstall>>(File.ReadAllText(INSTALLATIONS_JSON));
+        InstallationList = JsonConvert.DeserializeObject<XvTInstallationList>(File.ReadAllText(INSTALLATIONS_JSON));
 
-      SourceDirectory.Text = BaseInstall?.Filepath ?? string.Empty;
-      CreateNewInstall.IsEnabled = HasBaseInstall;
-    }
-
-    private void AddOrUpdateBaseInstallation()
-    {
-      if (HasBaseInstall)
-        BaseInstall.Filepath = SourceDirectory.Text;      
-      else
-        Installations.Add(new XvTInstall(BASE_GAME, SourceDirectory.Text));
+      CreateNewInstall.IsEnabled = InstallationList.HasBaseInstallation;
+      DataContext = InstallationList;
     }
 
     private void BrowseSourceDirectory_Click(object sender, RoutedEventArgs e)
@@ -47,18 +37,20 @@ namespace XvTSwitcherGUI
       var dialog = new FolderBrowserDialog();
       DialogResult result = dialog.ShowDialog();
       //DialogResult result = dlg.ShowDialog(this.GetIWin32Window());
+
       if (result == System.Windows.Forms.DialogResult.OK)
       {
-        SourceDirectory.Text = dialog.SelectedPath;
-        AddOrUpdateBaseInstallation();
+        InstallationList.BaseInstallation = new XvTInstall(string.Empty, dialog.SelectedPath);
+        if (SelectActiveInstall.Text == string.Empty || InstallationList.ActiveInstallation.Name == InstallationList.BaseInstallation.Name)
+          InstallationList.ActiveInstallation = InstallationList.BaseInstallation;
       }
 
-      CreateNewInstall.IsEnabled = HasBaseInstall;
+      CreateNewInstall.IsEnabled = InstallationList.HasBaseInstallation;
     }
 
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {     
-      File.WriteAllText(INSTALLATIONS_JSON, JsonConvert.SerializeObject(Installations, Formatting.Indented));
+      File.WriteAllText(INSTALLATIONS_JSON, JsonConvert.SerializeObject(InstallationList, Formatting.Indented));
     }
 
     private void CreateNewInstall_Click(object sender, RoutedEventArgs e)
@@ -82,7 +74,7 @@ namespace XvTSwitcherGUI
           }
 
           CopyDirectory.IO.CopyDirectory(sourceDirectory, newInstallPath, true);
-          Installations.Add(new XvTInstall(dialog.NewInstallName.Text, newInstallPath));
+          InstallationList.AddOrUpdate(dialog.NewInstallName.Text, newInstallPath);
         }
         finally
         {
