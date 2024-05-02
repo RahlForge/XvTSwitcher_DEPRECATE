@@ -2,12 +2,9 @@
 using System.IO;
 using Newtonsoft.Json;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using XvTSwitcherGUI.Installations;
-using XvTSwitcherGUI.Windows;
 using System.Linq;
 using System.Windows.Input;
-using System.Collections.ObjectModel;
 
 namespace XvTSwitcherGUI.Windows
 {
@@ -19,7 +16,8 @@ namespace XvTSwitcherGUI.Windows
     private const string STAR_WARS_XVT = "Star Wars - XvT";
     private const string INSTALLATIONS_JSON = "installations.json";
 
-    private XvTInstallationList InstallationList { get; set; } = new XvTInstallationList();    
+    private XvTInstallationList InstallationList { get; set; } = new XvTInstallationList();
+    private string PriorActiveInstallation { get; set; } = string.Empty;
 
     public MainWindow()
     {
@@ -32,6 +30,8 @@ namespace XvTSwitcherGUI.Windows
       DataContext = InstallationList;
     }
 
+    private string DefaultFilePath => Path.GetFullPath($"{SourceDirectory.Text}/../{STAR_WARS_XVT}");
+
     private void BrowseSourceDirectory_Click(object sender, RoutedEventArgs e)
     {
       var dialog = new FolderBrowserDialog();
@@ -39,11 +39,7 @@ namespace XvTSwitcherGUI.Windows
       //DialogResult result = dlg.ShowDialog(this.GetIWin32Window());
 
       if (result == System.Windows.Forms.DialogResult.OK)
-      {
-        InstallationList.BaseInstallation = new XvTInstall(string.Empty, dialog.SelectedPath);
-        if (SelectActiveInstall.Text == string.Empty || InstallationList.ActiveInstallation.Name == InstallationList.BaseInstallation.Name)
-          InstallationList.ActiveInstallation = InstallationList.BaseInstallation;
-      }
+        InstallationList.CreateOrUpdateBaseGame(dialog.SelectedPath);
 
       CreateNewInstall.IsEnabled = InstallationList.HasBaseInstallation;
     }
@@ -64,10 +60,10 @@ namespace XvTSwitcherGUI.Windows
         try
         {
           Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-          var newInstallPath = Path.GetFullPath($"{SourceDirectory.Text}/../{STAR_WARS_XVT} ({dialog.NewInstallName.Text})");
+          var newInstallPath = Path.GetFullPath($"{DefaultFilePath} ({dialog.NewInstallName.Text})");
           var sourceDirectory = SourceDirectory.Text;
 
-          if (Directory.Exists(newInstallPath))
+          if (Directory.Exists(newInstallPath) || InstallationList.DoesInstallationExist(dialog.NewInstallName.Text))
           {
             System.Windows.MessageBox.Show("Cannot create - that installation already exists.");
             return;
@@ -79,7 +75,34 @@ namespace XvTSwitcherGUI.Windows
         finally
         {
           Mouse.OverrideCursor = null;
-        }        
+        }
+      }
+    }
+
+    private void SelectActiveInstall_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+      try
+      {
+        Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;                
+        DirectoryInfo directory = new DirectoryInfo(DefaultFilePath);
+        var newActiveInstallationPath = InstallationList.Installations.FirstOrDefault(o => o.Name == InstallationList.ActiveInstallation).Filepath;
+
+        if (directory.FullName != newActiveInstallationPath)
+        {
+          var priorInstallationPath = $"{DefaultFilePath} ({PriorActiveInstallation})";
+          directory.MoveTo(priorInstallationPath);
+          InstallationList.AddOrUpdate(PriorActiveInstallation, priorInstallationPath);
+
+          directory = new DirectoryInfo(newActiveInstallationPath);
+          directory.MoveTo($"{DefaultFilePath}");
+          InstallationList.AddOrUpdate(InstallationList.ActiveInstallation, DefaultFilePath);
+        }
+
+        PriorActiveInstallation = InstallationList.ActiveInstallation;
+      }
+      finally
+      { 
+        Mouse.OverrideCursor = null; 
       }
     }
   }

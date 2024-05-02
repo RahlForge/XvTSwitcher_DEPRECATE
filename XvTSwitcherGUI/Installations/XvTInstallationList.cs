@@ -15,8 +15,8 @@ namespace XvTSwitcherGUI.Installations
 
     public ObservableCollection<XvTInstall> Installations { get; set; } = new ObservableCollection<XvTInstall>();
 
-    private XvTInstall activeInstallation;    
-    public XvTInstall ActiveInstallation
+    private string activeInstallation;
+    public string ActiveInstallation
     {
       get => activeInstallation;
       set
@@ -37,6 +37,7 @@ namespace XvTSwitcherGUI.Installations
     }
 
     public bool HasBaseInstallation => BaseInstallation != null;
+    public bool DoesInstallationExist(string name) => Installations.Any(o => o.Name == name);
 
     public XvTInstallationList() { }
 
@@ -47,6 +48,8 @@ namespace XvTSwitcherGUI.Installations
       else
         Installations.Add(new XvTInstall(name, filepath));
     }    
+
+    public void CreateOrUpdateBaseGame(string filepath) => BaseInstallation = new XvTInstall(BASE_GAME, filepath);
 
     public event PropertyChangedEventHandler PropertyChanged;
 

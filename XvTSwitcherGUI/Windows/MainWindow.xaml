@@ -34,14 +34,13 @@
               Width="Auto"
               ItemsSource="{Binding Installations}" 
               DisplayMemberPath="Name" 
-              SelectedValuePath="Name" 
-              SelectedValue="{Binding ActiveInstallation.Name}" />
+              SelectedValuePath="Name"
+              SelectedValue="{Binding ActiveInstallation}"
+              SelectionChanged="SelectActiveInstall_SelectionChanged"/>
 
     <StackPanel>
 
     </StackPanel>
   </Grid>
 
-</Window>
-
-  
+</Window> 
