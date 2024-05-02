@@ -63,7 +63,8 @@
   <ItemGroup>
     <Compile Include="Installations\IXvTInstall.cs" />
     <Compile Include="Installations\XvTInstall.cs" />
-    <Compile Include="Installations\XvTInstallations.cs" />
+    <Compile Include="Installations\XvTInstallationList.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Windows\NewInstall.xaml.cs">
       <DependentUpon>NewInstall.xaml</DependentUpon>
     </Compile>
