@@ -36,7 +36,7 @@ namespace XvTSwitcherGUI.Installations
       }
     }
 
-    public bool HasBaseInstallation => BaseInstallation != null;
+    public bool HasBaseInstallation => BaseInstallation?.Filepath != string.Empty;
     public bool DoesInstallationExist(string name) => Installations.Any(o => o.Name == name);
 
     public XvTInstallationList() { }

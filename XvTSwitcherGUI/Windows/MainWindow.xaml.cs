@@ -26,11 +26,21 @@ namespace XvTSwitcherGUI.Windows
       if (File.Exists(INSTALLATIONS_JSON) && new FileInfo(INSTALLATIONS_JSON).Length > 0)
         InstallationList = JsonConvert.DeserializeObject<XvTInstallationList>(File.ReadAllText(INSTALLATIONS_JSON));
 
-      CreateNewInstall.IsEnabled = InstallationList.HasBaseInstallation;
+      EnableDisableDependentControls();
       DataContext = InstallationList;
     }
 
     private string DefaultFilePath => Path.GetFullPath($"{SourceDirectory.Text}/../{STAR_WARS_XVT}");
+
+    private void EnableDisableDependentControls()
+    {
+      var isEnabled = InstallationList.HasBaseInstallation;
+
+      CreateNewInstall.IsEnabled = isEnabled;
+      DetectExistingInstalls.IsEnabled = isEnabled;
+      SelectActiveInstall.IsEnabled = isEnabled;
+      RenameActiveInstall.IsEnabled = isEnabled;      
+    }
 
     private void BrowseSourceDirectory_Click(object sender, RoutedEventArgs e)
     {
@@ -39,9 +49,13 @@ namespace XvTSwitcherGUI.Windows
       //DialogResult result = dlg.ShowDialog(this.GetIWin32Window());
 
       if (result == System.Windows.Forms.DialogResult.OK)
+      {
         InstallationList.CreateOrUpdateBaseGame(dialog.SelectedPath);
+        if (SelectActiveInstall.Text == string.Empty)
+          InstallationList.ActiveInstallation = InstallationList.BaseInstallation.Name;
+      }
 
-      CreateNewInstall.IsEnabled = InstallationList.HasBaseInstallation;
+      EnableDisableDependentControls();
     }
 
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -104,6 +118,63 @@ namespace XvTSwitcherGUI.Windows
       { 
         Mouse.OverrideCursor = null; 
       }
+    }
+
+    private void RenameActiveInstall_Click(object sender, RoutedEventArgs e)
+    {
+      if (InstallationList.ActiveInstallation == InstallationList.BaseInstallation.Name)
+      {
+        System.Windows.MessageBox.Show("Cannot rename the base installation!");
+        return;
+      }      
+
+      var dialog = new NewInstall();
+      dialog.Owner = this;
+      var result = dialog.ShowDialog() ?? false;
+
+      if (result)
+      {
+        try
+        {
+          SelectActiveInstall.SelectionChanged -= SelectActiveInstall_SelectionChanged;
+          Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+
+          var newName = dialog.NewInstallName.Text;
+          if (InstallationList.DoesInstallationExist(newName) && InstallationList.ActiveInstallation.Equals(newName) == false)
+          {
+            System.Windows.MessageBox.Show("Cannot rename - that installation already exists.");
+            return;
+          }
+
+          InstallationList.Installations.FirstOrDefault(o => o.Name == InstallationList.ActiveInstallation).Name = newName;
+          InstallationList.ActiveInstallation = newName;
+          PriorActiveInstallation = InstallationList.ActiveInstallation;
+        }
+        finally
+        {
+          SelectActiveInstall.SelectionChanged += SelectActiveInstall_SelectionChanged;
+          Mouse.OverrideCursor = null;
+        }
+      }
+    }
+
+    private void DetectExistingInstalls_Click(object sender, RoutedEventArgs e)
+    {
+      var baseDirectory = new DirectoryInfo($"{DefaultFilePath}/../");
+      InstallationList.ActiveInstallation = InstallationList.BaseInstallation.Name;
+
+      baseDirectory.EnumerateDirectories().Where(dir => dir.Name.Contains(STAR_WARS_XVT)).ToList().ForEach(dir =>
+      {
+        var extension = dir.Name.Replace(STAR_WARS_XVT, string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
+
+        if (dir.Name.Equals(STAR_WARS_XVT) == false && InstallationList.Installations.Any(o => o.Name.Equals(extension)) == false)
+          InstallationList.AddOrUpdate(extension, dir.FullName);
+      });
+    }
+
+    private void Window_ContentRendered(object sender, System.EventArgs e)
+    {
+      SourceDirectory.Focus();
     }
   }
 }
