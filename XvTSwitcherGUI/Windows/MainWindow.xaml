@@ -8,7 +8,8 @@
   d:DataContext="{d:DesignInstance Type=installations:XvTInstallationList}"
   mc:Ignorable="d"
   Title="XvT Switcher" Height="450" Width="800"
-  Closing="Window_Closing">
+  Closing="Window_Closing"
+  ContentRendered="Window_ContentRendered">
 
   <Grid Margin="10">
     <Grid.RowDefinitions>
@@ -21,22 +22,26 @@
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto"/>
       <ColumnDefinition Width="Auto"/>
+      <ColumnDefinition Width="Auto"/>
       <ColumnDefinition Width="*"/>
       <ColumnDefinition Width="Auto"/>
     </Grid.ColumnDefinitions>
 
     <Label Content="Source Directory" />
-    <TextBox Name="SourceDirectory" Text="{Binding BaseInstallation.Filepath}" Grid.Column="1" Grid.ColumnSpan="2"/>
-    <Button Name="BrowseSourceDirectory" Grid.Column="3" Margin="0,0,0,0" Padding="8,0,8,0" Click="BrowseSourceDirectory_Click">...</Button>
-    <Button Name="CreateNewInstall" Grid.Row="1" Margin="5,5,5,5" Click="CreateNewInstall_Click">Create New Install</Button>
-    <Label Content="Select Active Install" Grid.Row="2" />
+    <TextBox Name="SourceDirectory" Text="{Binding BaseInstallation.Filepath}" Grid.Column="1" Grid.ColumnSpan="3" Margin="5,5,0,5"/>
+    <Button Name="BrowseSourceDirectory" Grid.Column="4" Margin="0,5,5,5" Padding="6,0,6,0" Click="BrowseSourceDirectory_Click">...</Button>
+    <Button Name="DetectExistingInstalls" Grid.Row="1" Margin="5,5,5,5" Click="DetectExistingInstalls_Click" Width="Auto">_Detect Existing Installs</Button>
+    <Button Name="CreateNewInstall" Grid.Row="1" Grid.Column="1" Margin="5,5,5,5" Click="CreateNewInstall_Click">_Create New Install</Button>
+    <Label Content="Select Active Install" Grid.Row="2" Margin="0,3,0,2" Height="Auto" VerticalAlignment="Center" />
     <ComboBox Name="SelectActiveInstall" Grid.Row="2" Grid.Column="1" 
               Width="Auto"
+              Margin="5,5,5,5"
               ItemsSource="{Binding Installations}" 
               DisplayMemberPath="Name" 
               SelectedValuePath="Name"
               SelectedValue="{Binding ActiveInstallation}"
               SelectionChanged="SelectActiveInstall_SelectionChanged"/>
+    <Button Name="RenameActiveInstall" Grid.Row="2" Grid.Column="2" Margin="5,5,5,5" Click="RenameActiveInstall_Click">_Rename</Button>
 
     <StackPanel>
 

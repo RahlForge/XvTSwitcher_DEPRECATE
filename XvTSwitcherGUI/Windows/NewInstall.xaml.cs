@@ -26,5 +26,10 @@ namespace XvTSwitcherGUI.Windows
 
     private void NewInstallAccept_Click(object sender, RoutedEventArgs e) => DialogResult = true;
     private void NewInstallCancel_Click(object sender, RoutedEventArgs e) => DialogResult = false;
+
+    private void Window_ContentRendered(object sender, EventArgs e)
+    {
+      NewInstallName.Focus();
+    }
   }
 }
