@@ -39,6 +39,17 @@ namespace XvTSwitcherGUI.Installations
     public bool HasBaseInstallation => BaseInstallation?.Filepath != string.Empty;
     public bool DoesInstallationExist(string name) => Installations.Any(o => o.Name == name);
 
+    private bool hasGOGSteamIntegration;
+    public bool HasGOGSteamIntegration
+    {
+      get => hasGOGSteamIntegration;
+      set
+      {
+        hasGOGSteamIntegration = value;
+        OnPropertyChanged("HasGOGSteamIntegration");
+      }
+    }
+
     public XvTInstallationList() { }
 
     public void AddOrUpdate(string name, string filepath)

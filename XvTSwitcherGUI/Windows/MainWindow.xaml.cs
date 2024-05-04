@@ -13,7 +13,8 @@ namespace XvTSwitcherGUI.Windows
   /// </summary>
   public partial class MainWindow : Window
   {
-    private const string STAR_WARS_XVT = "Star Wars - XvT";
+    //private const string STAR_WARS_XVT = "Star Wars - XvT";
+    private const string STAR_WARS_XVT = "STAR WARS X-Wing vs TIE Fighter";
     private const string INSTALLATIONS_JSON = "installations.json";
 
     private XvTInstallationList InstallationList { get; set; } = new XvTInstallationList();
@@ -39,7 +40,8 @@ namespace XvTSwitcherGUI.Windows
       CreateNewInstall.IsEnabled = isEnabled;
       DetectExistingInstalls.IsEnabled = isEnabled;
       SelectActiveInstall.IsEnabled = isEnabled;
-      RenameActiveInstall.IsEnabled = isEnabled;      
+      RenameActiveInstall.IsEnabled = isEnabled;   
+      HasGOGSteamIntegration.IsEnabled = isEnabled;
     }
 
     private void BrowseSourceDirectory_Click(object sender, RoutedEventArgs e)
@@ -163,18 +165,29 @@ namespace XvTSwitcherGUI.Windows
       var baseDirectory = new DirectoryInfo($"{DefaultFilePath}/../");
       InstallationList.ActiveInstallation = InstallationList.BaseInstallation.Name;
 
-      baseDirectory.EnumerateDirectories().Where(dir => dir.Name.Contains(STAR_WARS_XVT)).ToList().ForEach(dir =>
+      baseDirectory.EnumerateDirectories().Where(dir => dir.Name.ToLowerInvariant().Contains(STAR_WARS_XVT.ToLowerInvariant())).ToList().ForEach(dir =>
       {
         var extension = dir.Name.Replace(STAR_WARS_XVT, string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
 
-        if (dir.Name.Equals(STAR_WARS_XVT) == false && InstallationList.Installations.Any(o => o.Name.Equals(extension)) == false)
-          InstallationList.AddOrUpdate(extension, dir.FullName);
+        if (dir.Name.ToLowerInvariant().Equals(STAR_WARS_XVT.ToLowerInvariant()) == false &&
+            InstallationList.Installations.Any(o => o.Name.ToLowerInvariant().Equals(extension.ToLowerInvariant())) == false)
+        {
+          var filepath = $"{DefaultFilePath} ({extension})";
+          if (dir.FullName.Equals(filepath) == false)
+            dir.MoveTo(filepath);
+          InstallationList.AddOrUpdate(extension, filepath);
+        }
       });
     }
 
     private void Window_ContentRendered(object sender, System.EventArgs e)
     {
       SourceDirectory.Focus();
+    }
+
+    private void BrowseGOGSteamDirectory_Click(object sender, RoutedEventArgs e)
+    {
+
     }
   }
 }

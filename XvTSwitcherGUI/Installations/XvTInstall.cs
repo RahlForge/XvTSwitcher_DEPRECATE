@@ -35,10 +35,22 @@ namespace XvTSwitcherGUI.Installations
       } 
     }
 
-    public XvTInstall(string name, string filepath)
+    private string gogSteamFilepath;
+    public string GOGSteamFilepath
+    {
+      get => gogSteamFilepath;
+      set
+      {
+        gogSteamFilepath = value;
+        OnPropertyChanged("GOGSteamFilepath");
+      }
+    }
+
+    public XvTInstall(string name, string filepath, string gogSteamFilepath = "")
     {
       Name = name;
       Filepath = filepath;
+      GOGSteamFilepath = gogSteamFilepath;
     }
 
     protected void OnPropertyChanged([CallerMemberName] string name = null)
