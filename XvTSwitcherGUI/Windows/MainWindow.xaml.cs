@@ -29,9 +29,12 @@ namespace XvTSwitcherGUI.Windows
 
       EnableDisableDependentControls();
       DataContext = InstallationList;
+      if (string.IsNullOrEmpty(InstallationList?.ActiveInstallation ?? string.Empty) == false)
+        PriorActiveInstallation = InstallationList.ActiveInstallation;
     }
 
-    private string DefaultFilePath => Path.GetFullPath($"{SourceDirectory.Text}/../{STAR_WARS_XVT}");
+    private string DefaultFilePath => Path.GetFullPath($"{SourceDirectory.Text}/../{InstallationList.GameLaunchFolder}");
+    private bool IsCrossPlatform => HasGOGSteamIntegration.IsChecked ?? false;
 
     private void EnableDisableDependentControls()
     {
@@ -76,17 +79,26 @@ namespace XvTSwitcherGUI.Windows
         try
         {
           Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-          var newInstallPath = Path.GetFullPath($"{DefaultFilePath} ({dialog.NewInstallName.Text})");
-          var sourceDirectory = SourceDirectory.Text;
 
-          if (Directory.Exists(newInstallPath) || InstallationList.DoesInstallationExist(dialog.NewInstallName.Text))
+          var isExisting = dialog.rbSelectExisting.IsChecked ?? false;
+          var installPath = isExisting ? dialog.BrowseExistingFolder.Content.ToString() : Path.GetFullPath($"{DefaultFilePath} ({dialog.NewInstallName.Text})");
+          var folderName = isExisting ? new DirectoryInfo(installPath).Name : $"{InstallationList.GameLaunchFolder} ({dialog.NewInstallName.Text})";
+          var gogSteamPath = IsCrossPlatform ? Path.GetFullPath($"{GOGSteamDirectory.Text}/{folderName}") : string.Empty;
+          var sourceDirectory = isExisting ? installPath : SourceDirectory.Text;
+
+          if ((isExisting == false && Directory.Exists(installPath)) || InstallationList.DoesInstallationExist(dialog.NewInstallName.Text))
           {
             System.Windows.MessageBox.Show("Cannot create - that installation already exists.");
             return;
           }
 
-          CopyDirectory.IO.CopyDirectory(sourceDirectory, newInstallPath, true);
-          InstallationList.AddOrUpdate(dialog.NewInstallName.Text, newInstallPath);
+          if (isExisting == false)
+            CopyDirectory.IO.CopyDirectory(sourceDirectory, installPath, true);           
+
+          if (IsCrossPlatform)
+            CopyDirectory.IO.CopyDirectory(sourceDirectory, gogSteamPath, true);
+
+          InstallationList.AddOrUpdate(dialog.NewInstallName.Text, installPath, gogSteamPath);
         }
         finally
         {
@@ -105,13 +117,30 @@ namespace XvTSwitcherGUI.Windows
 
         if (directory.FullName != newActiveInstallationPath)
         {
-          var priorInstallationPath = $"{DefaultFilePath} ({PriorActiveInstallation})";
-          directory.MoveTo(priorInstallationPath);
-          InstallationList.AddOrUpdate(PriorActiveInstallation, priorInstallationPath);
+          if (PriorActiveInstallation == string.Empty)
+          {
+            var dialog = new NewInstall();
+            dialog.Owner = this;
+            dialog.Title = "Enter current installation name";
+            dialog.rbCopyFromSource.Visibility = Visibility.Collapsed;
+            dialog.rbSelectExisting.Visibility = Visibility.Collapsed;
+
+            if (dialog.ShowDialog() == true)
+            {
+              PriorActiveInstallation = dialog.NewInstallName.Text;
+              InstallationList.AddOrUpdate(PriorActiveInstallation, $"{DefaultFilePath} ({PriorActiveInstallation})");
+            }
+            else
+            {
+              System.Windows.MessageBox.Show("Active installation needs a name before we can switch away from it");
+              return;
+            }
+          }
+
+          directory.MoveTo(InstallationList.Installations.FirstOrDefault(o => o.Name == PriorActiveInstallation).Filepath);                          
 
           directory = new DirectoryInfo(newActiveInstallationPath);
           directory.MoveTo($"{DefaultFilePath}");
-          InstallationList.AddOrUpdate(InstallationList.ActiveInstallation, DefaultFilePath);
         }
 
         PriorActiveInstallation = InstallationList.ActiveInstallation;
@@ -165,11 +194,11 @@ namespace XvTSwitcherGUI.Windows
       var baseDirectory = new DirectoryInfo($"{DefaultFilePath}/../");
       InstallationList.ActiveInstallation = InstallationList.BaseInstallation.Name;
 
-      baseDirectory.EnumerateDirectories().Where(dir => dir.Name.ToLowerInvariant().Contains(STAR_WARS_XVT.ToLowerInvariant())).ToList().ForEach(dir =>
+      baseDirectory.EnumerateDirectories().Where(dir => dir.Name.ToLowerInvariant().Contains(InstallationList.GameLaunchFolder.ToLowerInvariant())).ToList().ForEach(dir =>
       {
-        var extension = dir.Name.Replace(STAR_WARS_XVT, string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
+        var extension = dir.Name.Replace(InstallationList.GameLaunchFolder, string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Trim();
 
-        if (dir.Name.ToLowerInvariant().Equals(STAR_WARS_XVT.ToLowerInvariant()) == false &&
+        if (dir.Name.ToLowerInvariant().Equals(InstallationList.GameLaunchFolder.ToLowerInvariant()) == false &&
             InstallationList.Installations.Any(o => o.Name.ToLowerInvariant().Equals(extension.ToLowerInvariant())) == false)
         {
           var filepath = $"{DefaultFilePath} ({extension})";
@@ -187,7 +216,18 @@ namespace XvTSwitcherGUI.Windows
 
     private void BrowseGOGSteamDirectory_Click(object sender, RoutedEventArgs e)
     {
+      var dialog = new FolderBrowserDialog();
 
+      if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        GOGSteamDirectory.Text = dialog.SelectedPath;
+    }
+
+    private void BrowseLaunchFolder_Click(object sender, RoutedEventArgs e)
+    {
+      var dialog = new FolderBrowserDialog();     
+
+      if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        InstallationList.GameLaunchFolder = new DirectoryInfo(dialog.SelectedPath).Name;
     }
   }
 }

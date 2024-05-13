@@ -18,6 +18,7 @@
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>      
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
@@ -30,27 +31,35 @@
     </Grid.ColumnDefinitions>
 
     <!-- Row 0 -->
-    <Label Content="Source Directory" />
-    <TextBox Name="SourceDirectory" Text="{Binding BaseInstallation.Filepath}" Grid.Column="1" Grid.ColumnSpan="3" Margin="5,5,0,5"/>
-    <Button Name="BrowseSourceDirectory" Grid.Column="4" Margin="0,5,5,5" Padding="6,0,6,0" Click="BrowseSourceDirectory_Click">...</Button>
+    <Label Content="Game Launch Folder" Grid.ColumnSpan="2"/>
+    <TextBox Name="GameLaunchFolder" Grid.Column="1" Grid.ColumnSpan="3" Margin="5,5,0,5" Height="Auto" 
+         Text="{Binding GameLaunchFolder}" ToolTip="The folder your game launches from" />
+    <Button Name="BrowseLaunchFolder" Grid.Column="4" Margin="0,5,5,5" Padding="6,0,6,0" Click="BrowseLaunchFolder_Click">...</Button>
 
     <!-- Row 1 -->
-    <CheckBox Name="HasGOGSteamIntegration" Grid.Row="1" Grid.Column="1" Margin="5,3,5,5" Content="GOG/Steam Integration" Grid.ColumnSpan="2" 
-              IsChecked="{Binding HasGOGSteamIntegration}" IsEnabled="{Binding HasBaseInstallation}" 
-              VerticalAlignment="Center"/>
-    <TextBox Name="GOGSteamDirectory" Grid.Row="1" Grid.Column="3" Margin="0,3,0,5" Height="Auto" IsEnabled="{Binding HasGOGSteamIntegration}"              
-             Text="{Binding ElementName=SelectActiveInstall, Path=SelectedItem.GOGSteamFilepath}" 
-             ToolTip="Path to GOG Games or steamapps/common..." />
-    <Button Name="BrowseGOGSteamDirectory" Grid.Row="1" Grid.Column="4" Margin="0,3,5,5" Padding="6,0,6,0" IsEnabled="{Binding HasGOGSteamIntegration}" 
-            Click="BrowseGOGSteamDirectory_Click">...</Button>
+    <Label Content="Source Directory" Grid.Row="1" />
+    <TextBox Name="SourceDirectory" Text="{Binding BaseInstallation.Filepath}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="5,5,0,5"
+             ToolTip="The directory your base game installation resides in" IsEnabled="{Binding ElementName=GameLaunchFolder, Path=Text.Length}" />
+    <Button Name="BrowseSourceDirectory" Grid.Row="1" Grid.Column="4" Margin="0,5,5,5" Padding="6,0,6,0" 
+            IsEnabled="{Binding ElementName=GameLaunchFolder, Path=Text.Length}" Click="BrowseSourceDirectory_Click">...</Button>            
 
     <!-- Row 2 -->
-    <Button Name="DetectExistingInstalls" Grid.Row="2" Margin="5,5,5,5" Click="DetectExistingInstalls_Click" Width="Auto">_Detect Existing Installs</Button>
-    <Button Name="CreateNewInstall" Grid.Row="2" Grid.Column="1" Margin="5,5,5,5" Click="CreateNewInstall_Click">_Create New Install</Button>
+    <CheckBox Name="HasGOGSteamIntegration" Grid.Row="2" Grid.Column="1" Margin="5,3,5,5" Content="GOG/Steam Integration" Grid.ColumnSpan="2" 
+              IsChecked="{Binding HasGOGSteamIntegration}" IsEnabled="{Binding HasBaseInstallation}" 
+              VerticalAlignment="Center"/>
+    <TextBox Name="GOGSteamDirectory" Grid.Row="2" Grid.Column="3" Margin="0,3,0,5" Height="Auto" IsEnabled="{Binding HasGOGSteamIntegration}"              
+             Text="{Binding ElementName=SelectActiveInstall, Path=SelectedItem.GOGSteamFilepath}" 
+             ToolTip="Path to GOG Games or steamapps/common..." />
+    <Button Name="BrowseGOGSteamDirectory" Grid.Row="2" Grid.Column="4" Margin="0,3,5,5" Padding="6,0,6,0" IsEnabled="{Binding HasGOGSteamIntegration}" 
+            Click="BrowseGOGSteamDirectory_Click">...</Button>
 
     <!-- Row 3 -->
-    <Label Content="Select Active Install" Grid.Row="3" Margin="0,3,0,2" Height="Auto" VerticalAlignment="Center" />
-    <ComboBox Name="SelectActiveInstall" Grid.Row="3" Grid.Column="1" 
+    <Button Name="DetectExistingInstalls" Grid.Row="3" Margin="5,5,5,5" Click="DetectExistingInstalls_Click" Width="Auto" Visibility="Hidden">_Detect Existing Installs</Button>
+    <Button Name="CreateNewInstall" Grid.Row="3" Grid.Column="1" Margin="5,5,5,5" Click="CreateNewInstall_Click">_Create New Install</Button>
+
+    <!-- Row 4 -->
+    <Label Content="Select Active Install" Grid.Row="4" Margin="0,3,0,2" Height="Auto" VerticalAlignment="Center" />
+    <ComboBox Name="SelectActiveInstall" Grid.Row="4" Grid.Column="1" 
               Width="Auto"
               Margin="5,5,5,5"
               ItemsSource="{Binding Installations}" 
@@ -60,8 +69,8 @@
               SelectionChanged="SelectActiveInstall_SelectionChanged"/>
     <Button Name="RenameActiveInstall" Grid.Row="3" Grid.Column="2" Margin="5,5,5,5" Click="RenameActiveInstall_Click">_Rename</Button>
 
-    <!-- Row 4 -->
-    <Label Content="CONFIGURATION" Grid.Row="4" Grid.Column="1" Visibility="Hidden"/>
+    <!-- Row 5 -->
+    <Label Content="CONFIGURATION" Grid.Row="5" Grid.Column="1" Visibility="Hidden"/>
   </Grid>
 </Window>
 <!--<TextBlock Margin="5,2" MinWidth="50" Text="Suche..." 
