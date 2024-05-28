@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using XvTSwitcherGUI.Installations;
 using System.Linq;
 using System.Windows.Input;
+using CopyDirectory;
 
 namespace XvTSwitcherGUI.Windows
 {
@@ -55,7 +56,7 @@ namespace XvTSwitcherGUI.Windows
 
       if (result == System.Windows.Forms.DialogResult.OK)
       {
-        InstallationList.CreateOrUpdateBaseGame(dialog.SelectedPath);
+        InstallationList.CreateOrUpdateBaseGame(dialog.SelectedPath, IsCrossPlatform ? GOGSteamDirectory.Text : string.Empty);
         if (SelectActiveInstall.Text == string.Empty)
           InstallationList.ActiveInstallation = InstallationList.BaseInstallation.Name;
       }
@@ -83,7 +84,7 @@ namespace XvTSwitcherGUI.Windows
           var isExisting = dialog.rbSelectExisting.IsChecked ?? false;
           var installPath = isExisting ? dialog.BrowseExistingFolder.Content.ToString() : Path.GetFullPath($"{DefaultFilePath} ({dialog.NewInstallName.Text})");
           var folderName = isExisting ? new DirectoryInfo(installPath).Name : $"{InstallationList.GameLaunchFolder} ({dialog.NewInstallName.Text})";
-          var gogSteamPath = IsCrossPlatform ? Path.GetFullPath($"{GOGSteamDirectory.Text}/{folderName}") : string.Empty;
+          var gogSteamPath = IsCrossPlatform ? Path.GetFullPath($"{GOGSteamDirectory.Text}") : string.Empty;
           var sourceDirectory = isExisting ? installPath : SourceDirectory.Text;
 
           if ((isExisting == false && Directory.Exists(installPath)) || InstallationList.DoesInstallationExist(dialog.NewInstallName.Text))
@@ -93,10 +94,10 @@ namespace XvTSwitcherGUI.Windows
           }
 
           if (isExisting == false)
-            CopyDirectory.IO.CopyDirectory(sourceDirectory, installPath, true);           
+            CopyDirectory(sourceDirectory, installPath, true, true);           
 
           if (IsCrossPlatform)
-            CopyDirectory.IO.CopyDirectory(sourceDirectory, gogSteamPath, true);
+            CopyDirectory(sourceDirectory, gogSteamPath, true, true);
 
           InstallationList.AddOrUpdate(dialog.NewInstallName.Text, installPath, gogSteamPath);
         }
@@ -112,10 +113,9 @@ namespace XvTSwitcherGUI.Windows
       try
       {
         Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;                
-        DirectoryInfo directory = new DirectoryInfo(DefaultFilePath);
-        var newActiveInstallationPath = InstallationList.Installations.FirstOrDefault(o => o.Name == InstallationList.ActiveInstallation).Filepath;
+        var newActiveInstallation = InstallationList.Installations.FirstOrDefault(o => o.Name == InstallationList.ActiveInstallation);
 
-        if (directory.FullName != newActiveInstallationPath)
+        if (DefaultFilePath != newActiveInstallation.Filepath)
         {
           if (PriorActiveInstallation == string.Empty)
           {
@@ -128,7 +128,9 @@ namespace XvTSwitcherGUI.Windows
             if (dialog.ShowDialog() == true)
             {
               PriorActiveInstallation = dialog.NewInstallName.Text;
-              InstallationList.AddOrUpdate(PriorActiveInstallation, $"{DefaultFilePath} ({PriorActiveInstallation})");
+              InstallationList.AddOrUpdate(PriorActiveInstallation, 
+                $"{DefaultFilePath} ({PriorActiveInstallation})",
+                $"{InstallationList.GOGSteamLaunchFolder} ({PriorActiveInstallation})");
             }
             else
             {
@@ -137,10 +139,16 @@ namespace XvTSwitcherGUI.Windows
             }
           }
 
-          directory.MoveTo(InstallationList.Installations.FirstOrDefault(o => o.Name == PriorActiveInstallation).Filepath);                          
+          SwapInstalls(
+            newActiveInstallation.Filepath,
+            InstallationList.Installations.FirstOrDefault(o => o.Name == PriorActiveInstallation).Filepath,
+            DefaultFilePath);
 
-          directory = new DirectoryInfo(newActiveInstallationPath);
-          directory.MoveTo($"{DefaultFilePath}");
+          if (IsCrossPlatform && string.IsNullOrEmpty(newActiveInstallation.GOGSteamFilepath) == false)
+            SwapInstalls(
+              newActiveInstallation.GOGSteamFilepath,
+              InstallationList.Installations.FirstOrDefault(o => o.Name == PriorActiveInstallation).GOGSteamFilepath,
+              InstallationList.GOGSteamLaunchFolder);            
         }
 
         PriorActiveInstallation = InstallationList.ActiveInstallation;
@@ -148,6 +156,18 @@ namespace XvTSwitcherGUI.Windows
       finally
       { 
         Mouse.OverrideCursor = null; 
+      }
+    }
+
+    private void SwapInstalls(string newInstallPath, string priorInstallPath, string launchFolder)
+    {
+      if (newInstallPath != priorInstallPath)
+      {
+        var directory = new DirectoryInfo(launchFolder);
+        directory.MoveTo(priorInstallPath);
+
+        directory = new DirectoryInfo(newInstallPath);
+        directory.MoveTo(launchFolder);
       }
     }
 
@@ -204,7 +224,7 @@ namespace XvTSwitcherGUI.Windows
           var filepath = $"{DefaultFilePath} ({extension})";
           if (dir.FullName.Equals(filepath) == false)
             dir.MoveTo(filepath);
-          InstallationList.AddOrUpdate(extension, filepath);
+          //InstallationList.AddOrUpdate(extension, filepath);
         }
       });
     }
@@ -219,7 +239,33 @@ namespace XvTSwitcherGUI.Windows
       var dialog = new FolderBrowserDialog();
 
       if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+      {
         GOGSteamDirectory.Text = dialog.SelectedPath;
+
+        InstallationList.Installations.ToList().ForEach(o =>
+        {
+          o.GOGSteamFilepath = $"{dialog.SelectedPath} ({o.Name})";
+
+          var directory = new DirectoryInfo(o.GOGSteamFilepath);
+          if (directory.Exists == false && o.Name != InstallationList.ActiveInstallation)
+          {            
+            if (System.Windows.MessageBox.Show(this, $"Need Steam directory for {o.Name} install. Select existing? (Click 'no' to create new folder)", 
+              "Missing Steam directory", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes)
+            {
+              var getSteam = new NewInstall();
+              getSteam.Owner = this;
+              getSteam.Title = "Select Steam Install";
+              getSteam.rbCopyFromSource.IsChecked = false;
+              getSteam.rbCopyFromSource.IsEnabled = false;
+              getSteam.rbSelectExisting.IsChecked = true;
+              if (getSteam.ShowDialog() == true)
+                o.GOGSteamFilepath = getSteam.BrowseExistingFolder.Content.ToString();
+            }
+            else
+              CopyDirectory(o.Filepath, directory.FullName, false, true);
+          }
+        });
+      }
     }
 
     private void BrowseLaunchFolder_Click(object sender, RoutedEventArgs e)
@@ -228,6 +274,34 @@ namespace XvTSwitcherGUI.Windows
 
       if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         InstallationList.GameLaunchFolder = new DirectoryInfo(dialog.SelectedPath).Name;
+    }
+
+    public static void CopyDirectory(string sourceDir, string destinationDir, bool overwrite = false, bool recursive = true)
+    {
+      DirectoryInfo directoryInfo = new DirectoryInfo(sourceDir);
+      if (!directoryInfo.Exists)
+      {
+        throw new DirectoryNotFoundException("Source directory not found: " + directoryInfo.FullName);
+      }
+
+      DirectoryInfo[] directories = directoryInfo.GetDirectories();
+      Directory.CreateDirectory(destinationDir);
+      FileInfo[] files = directoryInfo.GetFiles();
+      foreach (FileInfo fileInfo in files)
+      {
+        string destFileName = Path.Combine(destinationDir, fileInfo.Name);
+        fileInfo.CopyTo(destFileName, overwrite);
+      }
+
+      if (recursive)
+      {
+        DirectoryInfo[] array = directories;
+        foreach (DirectoryInfo directoryInfo2 in array)
+        {
+          string destinationDir2 = Path.Combine(destinationDir, directoryInfo2.Name);
+          CopyDirectory(directoryInfo2.FullName, destinationDir2, overwrite, recursive);
+        }
+      }
     }
   }
 }

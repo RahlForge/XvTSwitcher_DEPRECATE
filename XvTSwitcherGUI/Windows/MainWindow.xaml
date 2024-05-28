@@ -47,9 +47,9 @@
     <CheckBox Name="HasGOGSteamIntegration" Grid.Row="2" Grid.Column="1" Margin="5,3,5,5" Content="GOG/Steam Integration" Grid.ColumnSpan="2" 
               IsChecked="{Binding HasGOGSteamIntegration}" IsEnabled="{Binding HasBaseInstallation}" 
               VerticalAlignment="Center"/>
-    <TextBox Name="GOGSteamDirectory" Grid.Row="2" Grid.Column="3" Margin="0,3,0,5" Height="Auto" IsEnabled="{Binding HasGOGSteamIntegration}"              
-             Text="{Binding ElementName=SelectActiveInstall, Path=SelectedItem.GOGSteamFilepath}" 
-             ToolTip="Path to GOG Games or steamapps/common..." />
+    <TextBox Name="GOGSteamDirectory" Grid.Row="2" Grid.Column="3" Margin="0,3,0,5" Height="Auto" IsEnabled="{Binding HasGOGSteamIntegration}"
+             Text="{Binding GOGSteamLaunchFolder}" 
+             ToolTip="Path to GOG Games or steamapps/common XvT launch directory" />
     <Button Name="BrowseGOGSteamDirectory" Grid.Row="2" Grid.Column="4" Margin="0,3,5,5" Padding="6,0,6,0" IsEnabled="{Binding HasGOGSteamIntegration}" 
             Click="BrowseGOGSteamDirectory_Click">...</Button>
 
