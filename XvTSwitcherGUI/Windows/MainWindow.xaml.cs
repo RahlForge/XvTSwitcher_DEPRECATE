@@ -166,8 +166,7 @@ namespace XvTSwitcherGUI.Windows
     private void SelectActiveInstall_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
       try
-      {
-        Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;                
+      {          
         var newActiveInstallation = InstallationList.Installations.FirstOrDefault(o => o.Name == InstallationList.ActiveInstallation);
 
         if (PriorActiveInstallation != newActiveInstallation.Name)
@@ -201,24 +200,49 @@ namespace XvTSwitcherGUI.Windows
             }
           }
 
-          SwapInstalls(
-            newActiveInstallation.Filepath,
-            InstallationList.Installations.FirstOrDefault(o => o.Name == PriorActiveInstallation).Filepath,
-            DefaultFilePath);
+          Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+          //ShowLoadingAnimation();
+
+          var directory = new DirectoryInfo(DefaultFilePath);
+          if (directory.Exists)
+            directory.Delete(true);
+          CopyDirectory(newActiveInstallation.Filepath, DefaultFilePath, true, true);
+
+          //SwapInstalls(
+          //  newActiveInstallation.Filepath,
+          //  InstallationList.Installations.FirstOrDefault(o => o.Name == PriorActiveInstallation).Filepath,
+          //  DefaultFilePath);
 
           if (IsCrossPlatform && string.IsNullOrEmpty(newActiveInstallation.SteamFilepath) == false)
-            SwapInstalls(
-              newActiveInstallation.SteamFilepath,
-              InstallationList.Installations.FirstOrDefault(o => o.Name == PriorActiveInstallation).SteamFilepath,
-              InstallationList.SteamLaunchFolder);            
+          {
+            var steamDirectory = new DirectoryInfo(SteamDirectory.Text);
+            if (steamDirectory.Exists)
+              steamDirectory.Delete(true);
+            CopyDirectory(newActiveInstallation.SteamFilepath, SteamDirectory.Text, true, true);
+            //SwapInstalls(
+            //  newActiveInstallation.SteamFilepath,
+            //  InstallationList.Installations.FirstOrDefault(o => o.Name == PriorActiveInstallation).SteamFilepath,
+            //  InstallationList.SteamLaunchFolder);
+          }
         }
 
         PriorActiveInstallation = InstallationList.ActiveInstallation;
       }
       finally
-      { 
+      {
+        //HideLoadingAnimation();
         Mouse.OverrideCursor = null; 
       }
+    }
+
+    private void ShowLoadingAnimation()
+    {
+      LoadingAnimation.Opacity = 1.0;
+    }
+
+    private void HideLoadingAnimation()
+    {
+      LoadingAnimation.Opacity = 0.0;
     }
 
     private void SwapInstalls(string newInstallPath, string priorInstallPath, string launchFolder)

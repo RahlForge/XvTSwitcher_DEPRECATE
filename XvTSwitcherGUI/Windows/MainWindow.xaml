@@ -18,7 +18,7 @@
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>      
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
@@ -43,7 +43,7 @@
              Visibility="Collapsed" />
     <Button Name="BrowseSourceDirectory" Grid.Row="1" Grid.Column="4" Margin="0,5,5,5" Padding="6,0,6,0" 
             IsEnabled="{Binding ElementName=GameLaunchFolder, Path=Text.Length}" Click="BrowseSourceDirectory_Click"
-            Visibility="Collapsed">...</Button>-->            
+            Visibility="Collapsed">...</Button>-->
 
     <!-- Row 2 -->
     <CheckBox Name="HasSteamIntegration" Grid.Row="2" Grid.Column="1" Margin="5,3,5,5" Content="GOG/Steam Integration" Grid.ColumnSpan="2" 
@@ -72,6 +72,16 @@
 
     <!-- Row 5 -->
     <Label Content="CONFIGURATION" Grid.Row="5" Grid.Column="1" Visibility="Hidden"/>
+
+    <!-- Span entire grid -->
+    <Image Name="LoadingAnimation" Source="../Images/xwingloading.gif" Grid.RowSpan="7" Grid.ColumnSpan="5" Height="75" Width="75" 
+           Opacity="0.0" RenderTransformOrigin="0.5,0.5">
+      <Image.RenderTransform>
+        <TransformGroup>
+          <RotateTransform Angle="90"/>
+        </TransformGroup>
+      </Image.RenderTransform>
+    </Image>
   </Grid>
 </Window>
 <!--<TextBlock Margin="5,2" MinWidth="50" Text="Suche..." 
