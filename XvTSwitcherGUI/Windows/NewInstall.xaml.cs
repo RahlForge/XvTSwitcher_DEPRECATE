@@ -21,9 +21,10 @@ namespace XvTSwitcherGUI.Windows
   /// </summary>
   public partial class NewInstall : Window
   {
-    public NewInstall()
+    public NewInstall(object dataContext)
     {
       InitializeComponent();
+      DataContext = dataContext;
     }
 
     private void NewInstallAccept_Click(object sender, RoutedEventArgs e) => DialogResult = true;

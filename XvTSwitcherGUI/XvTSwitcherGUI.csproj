@@ -103,7 +103,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Installations\IXvTInstall.cs" />
     <Compile Include="Installations\XvTInstall.cs" />
     <Compile Include="Installations\XvTInstallationList.cs" />

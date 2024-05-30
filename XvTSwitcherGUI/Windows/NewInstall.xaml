@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:XvTSwitcherGUI.Windows"
+        xmlns:local="clr-namespace:XvTSwitcherGUI.Windows" xmlns:installations="clr-namespace:XvTSwitcherGUI.Installations"
+        d:DataContext="{d:DesignInstance Type=installations:XvTInstallationList}"
         mc:Ignorable="d"
         Title="New Install Name" 
         SizeToContent="WidthAndHeight"
@@ -36,8 +37,16 @@
             FontStyle="Oblique" FontWeight="Light" BorderThickness="0" Content="Select existing folder..." 
             Visibility="{Binding IsChecked, ElementName=rbSelectExisting, Converter={StaticResource b2v}}"/>
 
+    <Label Name="SourceLabel" Content="Source" Grid.Row="1" Visibility="{Binding IsChecked, ElementName=rbCopyFromSource, Converter={StaticResource b2v}}" />
+    <ComboBox Name="SourceFolder" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,5,5,5" 
+              Visibility="{Binding IsChecked, ElementName=rbCopyFromSource, Converter={StaticResource b2v}}"
+              ItemsSource="{Binding Installations}"
+              DisplayMemberPath="Name" 
+              SelectedValuePath="Name"
+              SelectedValue="{Binding ActiveInstallation}" />
+
     <!-- Row 2 -->
-    <Label Content="Name of new Install" Grid.Row="2"/>
+    <Label Name="NewInstallNameLabel" Content="Name of new Install" Grid.Row="2"/>
     <TextBox Name="NewInstallName" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,5,5,5"></TextBox>
 
     <!-- Row 3 -->

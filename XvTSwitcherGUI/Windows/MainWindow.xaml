@@ -37,21 +37,22 @@
     <Button Name="BrowseLaunchFolder" Grid.Column="4" Margin="0,5,5,5" Padding="6,0,6,0" Click="BrowseLaunchFolder_Click">...</Button>
 
     <!-- Row 1 -->
-    <Label Content="Source Directory" Grid.Row="1" />
+    <!--<Label Content="Source Directory" Grid.Row="1" Visibility="Collapsed" />
     <TextBox Name="SourceDirectory" Text="{Binding BaseInstallation.Filepath}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="5,5,0,5"
-             ToolTip="The directory your base game installation resides in" IsEnabled="{Binding ElementName=GameLaunchFolder, Path=Text.Length}" />
+             ToolTip="The directory your base game installation resides in" IsEnabled="{Binding ElementName=GameLaunchFolder, Path=Text.Length}" 
+             Visibility="Collapsed" />
     <Button Name="BrowseSourceDirectory" Grid.Row="1" Grid.Column="4" Margin="0,5,5,5" Padding="6,0,6,0" 
-            IsEnabled="{Binding ElementName=GameLaunchFolder, Path=Text.Length}" Click="BrowseSourceDirectory_Click">...</Button>            
+            IsEnabled="{Binding ElementName=GameLaunchFolder, Path=Text.Length}" Click="BrowseSourceDirectory_Click"
+            Visibility="Collapsed">...</Button>-->            
 
     <!-- Row 2 -->
-    <CheckBox Name="HasGOGSteamIntegration" Grid.Row="2" Grid.Column="1" Margin="5,3,5,5" Content="GOG/Steam Integration" Grid.ColumnSpan="2" 
-              IsChecked="{Binding HasGOGSteamIntegration}" IsEnabled="{Binding HasBaseInstallation}" 
+    <CheckBox Name="HasSteamIntegration" Grid.Row="2" Grid.Column="1" Margin="5,3,5,5" Content="GOG/Steam Integration" Grid.ColumnSpan="2" 
+              IsChecked="{Binding HasSteamIntegration}" IsEnabled="{Binding HasInstallations}" 
               VerticalAlignment="Center"/>
-    <TextBox Name="GOGSteamDirectory" Grid.Row="2" Grid.Column="3" Margin="0,3,0,5" Height="Auto" IsEnabled="{Binding HasGOGSteamIntegration}"
-             Text="{Binding GOGSteamLaunchFolder}" 
-             ToolTip="Path to GOG Games or steamapps/common XvT launch directory" />
-    <Button Name="BrowseGOGSteamDirectory" Grid.Row="2" Grid.Column="4" Margin="0,3,5,5" Padding="6,0,6,0" IsEnabled="{Binding HasGOGSteamIntegration}" 
-            Click="BrowseGOGSteamDirectory_Click">...</Button>
+    <TextBox Name="SteamDirectory" Grid.Row="2" Grid.Column="3" Margin="0,3,0,5" Height="Auto" IsEnabled="{Binding HasSteamIntegration}"
+             Text="{Binding SteamLaunchFolder}" ToolTip="Path to steamapps/common XvT launch directory" />
+    <Button Name="BrowseSteamDirectory" Grid.Row="2" Grid.Column="4" Margin="0,3,5,5" Padding="6,0,6,0" IsEnabled="{Binding HasSteamIntegration}" 
+            Click="BrowseSteamDirectory_Click">...</Button>
 
     <!-- Row 3 -->
     <Button Name="DetectExistingInstalls" Grid.Row="3" Margin="5,5,5,5" Click="DetectExistingInstalls_Click" Width="Auto" Visibility="Hidden">_Detect Existing Installs</Button>
