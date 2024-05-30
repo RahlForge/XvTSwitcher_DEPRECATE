@@ -10,10 +10,8 @@ using System.Threading.Tasks;
 namespace XvTSwitcherGUI.Installations
 {
   public class XvTInstallationList : INotifyPropertyChanged
-  {
-    private const string BASE_GAME = "BaseGame";
-
-    public ObservableCollection<XvTInstall> Installations { get; set; } = new ObservableCollection<XvTInstall>();
+  {   
+    public ObservableCollection<XvTInstall> Installations { get; set; } = new ObservableCollection<XvTInstall>(); 
 
     private string activeInstallation;
     public string ActiveInstallation
@@ -26,30 +24,55 @@ namespace XvTSwitcherGUI.Installations
       }
     }
 
-    public XvTInstall BaseInstallation
+    private string gameLaunchFolder;
+    public string GameLaunchFolder
     {
-      get => Installations.FirstOrDefault(o => o.Name == BASE_GAME) ?? new XvTInstall(BASE_GAME, string.Empty);
+      get => gameLaunchFolder;
       set
       {
-        AddOrUpdate(BASE_GAME, value.Filepath);
-        OnPropertyChanged("BaseInstallation");
+        gameLaunchFolder = value;
+        OnPropertyChanged("GameLaunchFolder");
       }
     }
 
-    public bool HasBaseInstallation => BaseInstallation != null;
+    public bool HasInstallations => Installations.Any();
     public bool DoesInstallationExist(string name) => Installations.Any(o => o.Name == name);
+
+    private bool hasSteamIntegration;
+    public bool HasSteamIntegration
+    {
+      get => hasSteamIntegration;
+      set
+      {
+        hasSteamIntegration = value;
+        OnPropertyChanged("hasSteamIntegration");
+      }
+    }
+
+    private string steamLaunchFolder;
+    public string SteamLaunchFolder
+    {
+      get => steamLaunchFolder;
+      set
+      {
+        steamLaunchFolder = value;
+        OnPropertyChanged("SteamLaunchFolder");
+      }
+    }
 
     public XvTInstallationList() { }
 
-    public void AddOrUpdate(string name, string filepath)
+    public void AddOrUpdate(string name, string filepath, string gogSteamFilepath)
     {
       if (Installations.Any(o => o.Name == name))
-        Installations.Where(o => o.Name == name).ToList().ForEach(o => o.Filepath = filepath);
+        Installations.Where(o => o.Name == name).ToList().ForEach(o => 
+        { 
+          o.Filepath = filepath; 
+          o.SteamFilepath = gogSteamFilepath;
+        });
       else
-        Installations.Add(new XvTInstall(name, filepath));
-    }    
-
-    public void CreateOrUpdateBaseGame(string filepath) => BaseInstallation = new XvTInstall(BASE_GAME, filepath);
+        Installations.Add(new XvTInstall(name, filepath, gogSteamFilepath));
+    }
 
     public event PropertyChangedEventHandler PropertyChanged;
 
