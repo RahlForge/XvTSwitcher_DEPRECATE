@@ -5,7 +5,6 @@ using System.Windows.Forms;
 using XvTSwitcherGUI.Installations;
 using System.Linq;
 using System.Windows.Input;
-using CopyDirectory;
 
 namespace XvTSwitcherGUI.Windows
 {
@@ -218,7 +217,7 @@ namespace XvTSwitcherGUI.Windows
             var steamDirectory = new DirectoryInfo(SteamDirectory.Text);
             if (steamDirectory.Exists)
               steamDirectory.Delete(true);
-            CopyDirectory(newActiveInstallation.SteamFilepath, SteamDirectory.Text, true, true);
+            CopyDirectory(newActiveInstallation.Filepath, SteamDirectory.Text, true, true);
             //SwapInstalls(
             //  newActiveInstallation.SteamFilepath,
             //  InstallationList.Installations.FirstOrDefault(o => o.Name == PriorActiveInstallation).SteamFilepath,
@@ -383,7 +382,7 @@ namespace XvTSwitcherGUI.Windows
     public static void CopyDirectory(string sourceDir, string destinationDir, bool overwrite = false, bool recursive = true)
     {
       DirectoryInfo directoryInfo = new DirectoryInfo(sourceDir);
-      if (!directoryInfo.Exists)
+      if (directoryInfo.Exists == false)
       {
         throw new DirectoryNotFoundException("Source directory not found: " + directoryInfo.FullName);
       }
