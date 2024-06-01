@@ -13,16 +13,7 @@ namespace XvTSwitcherGUI.Installations
   {   
     public ObservableCollection<XvTInstall> Installations { get; set; } = new ObservableCollection<XvTInstall>(); 
 
-    private string activeInstallation;
-    public string ActiveInstallation
-    {
-      get => activeInstallation;
-      set
-      {
-        activeInstallation = value;
-        OnPropertyChanged("ActiveInstallation");
-      }
-    }
+    public string ActiveInstallation => Installations.FirstOrDefault(o => o.IsActive).Name;
 
     private string gameLaunchFolder;
     public string GameLaunchFolder
@@ -62,16 +53,12 @@ namespace XvTSwitcherGUI.Installations
 
     public XvTInstallationList() { }
 
-    public void AddOrUpdate(string name, string filepath, string gogSteamFilepath)
+    public void AddOrUpdate(string name, string filepath)
     {
       if (Installations.Any(o => o.Name == name))
-        Installations.Where(o => o.Name == name).ToList().ForEach(o => 
-        { 
-          o.Filepath = filepath; 
-          o.SteamFilepath = gogSteamFilepath;
-        });
+        Installations.Where(o => o.Name == name).ToList().ForEach(o => { o.Filepath = filepath; });
       else
-        Installations.Add(new XvTInstall(name, filepath, gogSteamFilepath));
+        Installations.Add(new XvTInstall(name, filepath));
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

@@ -42,8 +42,8 @@
               Visibility="{Binding IsChecked, ElementName=rbCopyFromSource, Converter={StaticResource b2v}}"
               ItemsSource="{Binding Installations}"
               DisplayMemberPath="Name" 
-              SelectedValuePath="Name"
-              SelectedValue="{Binding ActiveInstallation}" />
+              SelectedValuePath="Name" 
+              SelectedValue="{Binding ActiveInstallation, Mode=OneWay}" />
 
     <!-- Row 2 -->
     <Label Name="NewInstallNameLabel" Content="Name of new Install" Grid.Row="2"/>

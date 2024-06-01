@@ -10,10 +10,20 @@ namespace XvTSwitcherGUI.Installations
 {
   public class XvTInstall : IXvTInstall, INotifyPropertyChanged
   {
-    private string name;
-
     public event PropertyChangedEventHandler PropertyChanged;
 
+    private bool isActive;
+    public bool IsActive
+    {
+      get => isActive;
+      set
+      {
+        isActive = value;
+        OnPropertyChanged("IsActive");
+      }
+    }
+
+    private string name;
     public string Name 
     { 
       get => name;
@@ -35,22 +45,10 @@ namespace XvTSwitcherGUI.Installations
       } 
     }
 
-    private string steamFilepath;
-    public string SteamFilepath
-    {
-      get => steamFilepath;
-      set
-      {
-        steamFilepath = value;
-        OnPropertyChanged("SteamFilepath");
-      }
-    }
-
-    public XvTInstall(string name, string filepath, string gogSteamFilepath)
+    public XvTInstall(string name, string filepath)
     {
       Name = name;
       Filepath = filepath;
-      SteamFilepath = gogSteamFilepath;
     }
 
     protected void OnPropertyChanged([CallerMemberName] string name = null)
