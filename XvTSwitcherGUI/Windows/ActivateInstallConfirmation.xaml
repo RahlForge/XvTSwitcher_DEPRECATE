@@ -1,0 +1,43 @@
+﻿<Window x:Class="XvTSwitcherGUI.Windows.ActivateInstallConfirmation"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:XvTSwitcherGUI.Windows"
+        xmlns:helpers="clr-namespace:XvTSwitcherGUI.Helpers"
+        mc:Ignorable="d"
+        Title="Confirm activation" SizeToContent="WidthAndHeight">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
+
+    <Label Name="ActivateInstallPrompt" Content="Activate [installation name]?" HorizontalAlignment="Center" Grid.ColumnSpan="2" />
+    
+    <!--<CheckBox Name="MustPreservePilotProfile" Grid.Row="1" Content="Preserve Pilot Profile" Margin="5,5,5,5" VerticalAlignment="Center" Grid.ColumnSpan="2" />-->
+    <ComboBox Name="PilotProfileOption" Grid.Row="1" Margin="5,5,5,5" Grid.ColumnSpan="2">
+      <ComboBoxItem Content="-- Pilot Profile Option --" IsSelected="True" Tag="Ignore" />
+      <ComboBoxItem Content="Preserve pilot to current install" Tag="Preserve" />
+      <ComboBoxItem Content="Send pilot to next install" Tag="Send" />
+      <ComboBoxItem Content="Preserve and send pilot" Tag="PreserveAndSend" />
+    </ComboBox>
+
+    <!--<CheckBox Name="MustPreserveControlConfig" Grid.Row="2" Content="Preserve Control Config" Margin="5,5,5,5" VerticalAlignment="Center" Grid.ColumnSpan="2" />-->
+    <ComboBox Name="ControlConfigOption" Grid.Row="2" Margin="5,5,5,5" Grid.ColumnSpan="2">
+      <ComboBoxItem Content="-- Config File Option --" IsSelected="True" Tag="Ignore" />
+      <ComboBoxItem Content="Preserve config to current install" Tag="Preserve" />
+      <ComboBoxItem Content="Send config to next install" Tag="Send" />
+      <ComboBoxItem Content="Preserve and send config" Tag="PreserveAndSend" />
+    </ComboBox>
+
+    <Button Name="ConfirmActivateInstall" Content="_Yes" helpers:ButtonHelper.DialogResult="True" Grid.Row="3" Margin="5,5,5,5"/>
+    <Button Name="DenyActivateInstall" Content="_No" helpers:ButtonHelper.DialogResult="False" Grid.Row="3" Grid.Column="1" Margin="5,5,5,5" />
+  </Grid>
+</Window>

@@ -100,16 +100,24 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\ButtonHelper.cs" />
     <Compile Include="Installations\IXvTInstall.cs" />
     <Compile Include="Installations\XvTInstall.cs" />
     <Compile Include="Installations\XvTInstallationList.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="Windows\ActivateInstallConfirmation.xaml.cs">
+      <DependentUpon>ActivateInstallConfirmation.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\NewInstall.xaml.cs">
       <DependentUpon>NewInstall.xaml</DependentUpon>
     </Compile>
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\ActivateInstallConfirmation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

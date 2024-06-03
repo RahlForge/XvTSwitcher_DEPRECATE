@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:XvTSwitcherGUI.Windows" xmlns:installations="clr-namespace:XvTSwitcherGUI.Installations"
-        d:DataContext="{d:DesignInstance Type=installations:XvTInstallationList}"
+        d:DataContext="{d:DesignInstance Type=installations:XvTInstallationList}"        
         mc:Ignorable="d"
         Title="New Install Name" 
         SizeToContent="WidthAndHeight"

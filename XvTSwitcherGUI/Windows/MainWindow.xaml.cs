@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using XvTSwitcherGUI.Installations;
 using System.Linq;
 using System.Windows.Input;
+using System;
 
 namespace XvTSwitcherGUI.Windows
 {
@@ -37,7 +38,7 @@ namespace XvTSwitcherGUI.Windows
       var isEnabled = string.IsNullOrEmpty(GameLaunchFolder.Text) == false;
 
       ActivateInstall.IsEnabled = isEnabled;
-      CreateNewInstall.IsEnabled = isEnabled;
+      AddInstall.IsEnabled = isEnabled;
       DetectExistingInstalls.IsEnabled = isEnabled;
       EditInstall.IsEnabled = isEnabled;   
       RemoveInstall.IsEnabled = isEnabled;
@@ -49,7 +50,7 @@ namespace XvTSwitcherGUI.Windows
       Save();
     }
 
-    private void CreateNewInstall_Click(object sender, RoutedEventArgs e)
+    private void AddInstall_Click(object sender, RoutedEventArgs e)
     {
       var dialog = new NewInstall(DataContext)
       {
@@ -184,10 +185,48 @@ namespace XvTSwitcherGUI.Windows
       try
       {
         var newActiveInstall = (XvTInstall)InstallationsGrid.SelectedItem;
+        var confirmDialog = new ActivateInstallConfirmation()
+        {
+          Owner = this
+        };
 
-        if (System.Windows.MessageBox.Show(this, $"Activate {newActiveInstall.Name}?", "Confirm XvT change", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+        confirmDialog.ActivateInstallPrompt.Content = $"Activate {newActiveInstall.Name}?";
+
+        if (confirmDialog.ShowDialog() == true)
         {
           Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+
+          switch (((System.Windows.Controls.ComboBoxItem)confirmDialog.PilotProfileOption.SelectedItem).Tag.ToString())
+          {
+            case "Preserve":
+              PreserveFiles("*.pl2", $"{ActiveInstall.Filepath}/BalanceOfPower/");
+              break;
+            case "Send":
+              PreserveFiles("*.pl2", $"{newActiveInstall.Filepath}/BalanceOfPower/");
+              break;
+            case "PreserveAndSend":
+              PreserveFiles("*.pl2", $"{ActiveInstall.Filepath}/BalanceOfPower/");
+              PreserveFiles("*.pl2", $"{newActiveInstall.Filepath}/BalanceOfPower/");
+              break;
+            default:
+              break;
+          }
+
+          switch (((System.Windows.Controls.ComboBoxItem)confirmDialog.PilotProfileOption.SelectedItem).Tag.ToString())
+          {
+            case "Preserve":
+              PreserveFiles("config2.cfg", $"{ActiveInstall.Filepath}/BalanceOfPower/");
+              break;
+            case "Send":
+              PreserveFiles("config2.cfg", $"{newActiveInstall.Filepath}/BalanceOfPower/");
+              break;
+            case "PreserveAndSend":
+              PreserveFiles("config2.cfg", $"{ActiveInstall.Filepath}/BalanceOfPower/");
+              PreserveFiles("config2.cfg", $"{newActiveInstall.Filepath}/BalanceOfPower/");
+              break;
+            default:
+              break;
+          }
 
           if (ActiveInstall != null)
             ActiveInstall.IsActive = false;
@@ -206,6 +245,14 @@ namespace XvTSwitcherGUI.Windows
         Save();
         Mouse.OverrideCursor = null;
       }
+    }
+
+    private void PreserveFiles(string filename, string targetDirectory)
+    {
+      Directory.GetFiles($"{InstallationList.GameLaunchFolder}/BalanceOfPower/", filename).ToList().ForEach(f =>
+      {
+        File.Copy(f, $"{targetDirectory}{Path.GetFileName(f)}", true);
+      });
     }
 
     private void SetActiveInstall(string filepath, string targetPath)
