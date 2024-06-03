@@ -13,7 +13,7 @@ namespace XvTSwitcherGUI.Installations
   {   
     public ObservableCollection<XvTInstall> Installations { get; set; } = new ObservableCollection<XvTInstall>(); 
 
-    public string ActiveInstallation => Installations.FirstOrDefault(o => o.IsActive).Name;
+    public string ActiveInstallation => Installations.FirstOrDefault(o => o.IsActive)?.Name ?? string.Empty;
 
     private string gameLaunchFolder;
     public string GameLaunchFolder
