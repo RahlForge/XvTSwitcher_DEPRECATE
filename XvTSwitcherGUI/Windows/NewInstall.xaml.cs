@@ -38,6 +38,7 @@ namespace XvTSwitcherGUI.Windows
     private void BrowseExistingFolder_Click(object sender, RoutedEventArgs e)
     {
       var dialog = new FolderBrowserDialog();
+      dialog.SelectedPath = (Owner as MainWindow).GameLaunchFolder.Text;
       DialogResult result = dialog.ShowDialog();
       //DialogResult result = dlg.ShowDialog(this.GetIWin32Window());
 

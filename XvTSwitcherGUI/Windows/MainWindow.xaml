@@ -73,13 +73,19 @@
       </DataGrid.Columns>
     </DataGrid>
     <StackPanel Grid.Row="4" Grid.Column="4">
-      <Button Name="ActivateInstall" Grid.Row="4" Grid.Column="4" Margin="5,5,5,5" HorizontalAlignment="Left" 
-              Width="Auto" Click="ActivateInstall_Click" Padding="5,0,5,0">A_ctivate</Button>
-      <Button Name="AddInstall" Grid.Row="4" Grid.Column="4" Margin="5,5,5,5" Width="{Binding ActualWidth, ElementName=ActivateInstall}"
+      <Button Name="ActivateInstall" Margin="5,5,5,5" HorizontalAlignment="Left" 
+              Width="Auto" Click="ActivateInstall_Click" Padding="5,1,5,1">A_ctivate</Button>
+      <Button Name="AddInstall" Margin="5,5,5,5" 
+              Width="{Binding ActualWidth, ElementName=ActivateInstall}"
+              Height="{Binding ActualHeight, ElementName=ActivateInstall}"
               HorizontalAlignment="Left" Click="AddInstall_Click">_Add</Button>
-      <Button Name="EditInstall" Grid.Row="3" Grid.Column="2" Margin="5,5,5,5" Width="{Binding ActualWidth, ElementName=ActivateInstall}" 
+      <Button Name="EditInstall" Margin="5,5,5,5" 
+              Width="{Binding ActualWidth, ElementName=ActivateInstall}" 
+              Height="{Binding ActualHeight, ElementName=ActivateInstall}"
               HorizontalAlignment="Left" Click="EditInstall_Click">_Edit</Button>
-      <Button Name="RemoveInstall" Grid.Row="5" Grid.Column="4" Margin="5,5,5,5" Width="{Binding ActualWidth, ElementName=ActivateInstall}" 
+      <Button Name="RemoveInstall" Margin="5,5,5,5" 
+              Width="{Binding ActualWidth, ElementName=ActivateInstall}" 
+              Height="{Binding ActualHeight, ElementName=ActivateInstall}"
               HorizontalAlignment="Left" Click="RemoveInstall_Click">Re_move</Button>
     </StackPanel>
     <!-- Row 5 -->
