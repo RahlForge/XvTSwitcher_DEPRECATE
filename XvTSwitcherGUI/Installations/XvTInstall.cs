@@ -45,6 +45,11 @@ namespace XvTSwitcherGUI.Installations
       } 
     }
 
+    public bool HasDDrawFix { get; set; }
+    public bool Has60FPSFix { get; set; }
+
+    public XvTInstall() { }
+
     public XvTInstall(string name, string filepath)
     {
       Name = name;

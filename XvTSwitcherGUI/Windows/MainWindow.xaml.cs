@@ -64,31 +64,46 @@ namespace XvTSwitcherGUI.Windows
         try
         {
           Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-
+          
           var isExisting = dialog.rbSelectExisting.IsChecked ?? false;
-          var installPath = isExisting ? dialog.BrowseExistingFolder.Content.ToString() : Path.GetFullPath($"{InstallationList.GameLaunchFolder} ({dialog.NewInstallName.Text})");
-          var folderName = isExisting ? new DirectoryInfo(installPath).Name : $"{InstallationList.GameLaunchFolder} ({dialog.NewInstallName.Text})";
+          var installName = dialog.NewInstallName.Text;
+          var installPath = isExisting ? dialog.BrowseExistingFolder.Content.ToString() : Path.GetFullPath($"{InstallationList.GameLaunchFolder} ({installName})");
+          var folderName = isExisting ? new DirectoryInfo(installPath).Name : $"{InstallationList.GameLaunchFolder} ({installName})";
           var steamPath = IsCrossPlatform ? Path.GetFullPath($"{SteamDirectory.Text}") : string.Empty;
           var sourceDirectory = isExisting 
             ? installPath 
             : InstallationList.Installations.FirstOrDefault(o => o.Name == dialog.SourceFolder.Text).Filepath;
 
-          if ((isExisting == false && Directory.Exists(installPath)) || InstallationList.DoesInstallationExist(dialog.NewInstallName.Text))
+          if (isExisting == false && Directory.Exists(installPath))
           {
             System.Windows.MessageBox.Show("Cannot create - installation filepath already exists...try selecting an existing folder, instead.");
             return;
           }
 
-          if (InstallationList.DoesInstallationExist(dialog.NewInstallName.Text))
+          if (InstallationList.DoesInstallationExist(installName))
           {
             System.Windows.MessageBox.Show("Cannot create - installation name already in use.");
             return;
           }
 
           if (isExisting == false)
-            CopyDirectory(sourceDirectory, installPath, true, true);           
+            CopyDirectory(sourceDirectory, installPath, true, true);
 
-          InstallationList.AddOrUpdate(dialog.NewInstallName.Text, installPath);
+          if (dialog.Include60FPSFix.IsChecked ?? false)
+            CopyMod(ModLibrary.SixtyFPSFix, installPath);
+
+          if (dialog.IncludeDDrawFix.IsChecked ?? false)
+            CopyMod(ModLibrary.DDrawFix, installPath);
+
+          var newInstall = new XvTInstall()
+          {
+            Name = installName,
+            Filepath = installPath,
+            Has60FPSFix = dialog.Include60FPSFix.IsChecked ?? false,
+            HasDDrawFix = dialog.IncludeDDrawFix.IsChecked ?? false
+          };
+
+          InstallationList.AddOrUpdate(newInstall);
         }
         finally
         {
@@ -96,6 +111,31 @@ namespace XvTSwitcherGUI.Windows
           Mouse.OverrideCursor = null;
         }
       }
+    }
+
+    private enum ModLibrary
+    {
+      DDrawFix,
+      SixtyFPSFix
+    }
+
+    private void CopyMod(ModLibrary modEnum, string targetPath)
+    {
+      var modSource = string.Empty;
+      switch (modEnum)
+      {
+        case ModLibrary.DDrawFix:
+          modSource = "./ModLibrary/DDrawFix/";
+          break;
+        case ModLibrary.SixtyFPSFix:
+          modSource = "./ModLibrary/60FPSFix/";          
+          break;
+      }
+
+      Directory.GetFiles(modSource).ToList().ForEach(f => {
+        File.Copy(f, $"{targetPath}/{Path.GetFileName(f)}");
+        File.Copy(f, $"{targetPath}/BalanceOfPower/{Path.GetFileName(f)}");
+      });
     }
 
     private void ShowLoadingAnimation()

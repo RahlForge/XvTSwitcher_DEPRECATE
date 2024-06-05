@@ -19,6 +19,7 @@
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto"/>
@@ -50,7 +51,24 @@
     <TextBox Name="NewInstallName" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,5,5,5"></TextBox>
 
     <!-- Row 3 -->
-    <Button Name="NewInstallAccept" Click="NewInstallAccept_Click" Grid.Row="3" Grid.Column="1" Margin="5,5,5,5" IsDefault="True">_Accept</Button>
-    <Button Name="NewInstallCancel" Click="NewInstallCancel_Click" Grid.Row="3" Grid.Column="2" Margin="5,5,5,5" IsCancel="True">_Cancel</Button>
+    <Expander Name="NewInstallConfigs" Header="Configuration" Grid.Row="3" Grid.ColumnSpan="3" Margin="5,5,5,5" Background="LightGray">
+      <Grid Background="White">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <CheckBox Name="IncludeDDrawFix" Content="Include _DDraw Fix" Margin="5,5,5,5" />
+        <CheckBox Name="Include60FPSFix" Content="Include 60_FPS Fix" Margin="5,5,5,5" Grid.Column="1" />
+      </Grid>
+    </Expander>
+
+    <!-- Row 4 -->
+    <Button Name="NewInstallAccept" Click="NewInstallAccept_Click" Grid.Row="4" Grid.Column="1" Margin="5,5,5,5" IsDefault="True">_Accept</Button>
+    <Button Name="NewInstallCancel" Click="NewInstallCancel_Click" Grid.Row="4" Grid.Column="2" Margin="5,5,5,5" IsCancel="True">_Cancel</Button>
   </Grid>
 </Window>

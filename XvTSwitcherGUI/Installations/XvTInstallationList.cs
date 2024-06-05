@@ -61,6 +61,21 @@ namespace XvTSwitcherGUI.Installations
         Installations.Add(new XvTInstall(name, filepath));
     }
 
+    public void AddOrUpdate(XvTInstall newInstall)
+    {
+      if (Installations.Any(o => o.Name == newInstall.Name || o.Filepath == newInstall.Filepath))
+      {
+        Installations.Where(o => o.Name == newInstall.Name || o.Filepath == newInstall.Filepath).ToList().ForEach(o =>
+        {
+          o = newInstall;
+        });
+
+        Installations = (ObservableCollection<XvTInstall>)Installations.Distinct();
+      }
+      else
+        Installations.Add(newInstall);
+    }
+
     public event PropertyChangedEventHandler PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string name = null)
