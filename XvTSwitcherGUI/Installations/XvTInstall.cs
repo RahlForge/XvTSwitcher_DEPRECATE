@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using XvTSwitcherGUI.ModLibrary;
 
 namespace XvTSwitcherGUI.Installations
 {
@@ -45,8 +46,16 @@ namespace XvTSwitcherGUI.Installations
       } 
     }
 
-    public bool HasDDrawFix { get; set; }
-    public bool Has60FPSFix { get; set; }
+    private List<XvTModLibrary> activeModsList;
+    public List<XvTModLibrary> ActiveModsList
+    {
+      get => activeModsList ?? new List<XvTModLibrary>();
+      set
+      {
+        activeModsList = value;
+        OnPropertyChanged("ActiveModsList");
+      }
+    }
 
     public XvTInstall() { }
 

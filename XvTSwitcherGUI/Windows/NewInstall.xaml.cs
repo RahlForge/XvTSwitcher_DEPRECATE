@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using XvTSwitcherGUI.ModLibrary;
 
 namespace XvTSwitcherGUI.Windows
 {
@@ -43,7 +44,18 @@ namespace XvTSwitcherGUI.Windows
       //DialogResult result = dlg.ShowDialog(this.GetIWin32Window());
 
       if (result == System.Windows.Forms.DialogResult.OK)
+      {
         BrowseExistingFolder.Content = dialog.SelectedPath;
+
+        // DetectExistingMods()
+      }
     }
+
+    //private List<XvTMod> DetectingExistingMods(string directory)
+    //{
+    //  var directoryInfo = new DirectoryInfo(directory);
+
+    //  //directoryInfo.GetFiles()
+    //}
   }
 }

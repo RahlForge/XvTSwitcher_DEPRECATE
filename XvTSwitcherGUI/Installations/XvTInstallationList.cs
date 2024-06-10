@@ -14,6 +14,9 @@ namespace XvTSwitcherGUI.Installations
     public ObservableCollection<XvTInstall> Installations { get; set; } = new ObservableCollection<XvTInstall>(); 
 
     public string ActiveInstallation => Installations.FirstOrDefault(o => o.IsActive)?.Name ?? string.Empty;
+    public List<string> ActiveInstallationMods => 
+      Installations.FirstOrDefault(o => o.IsActive)?.ActiveModsList.Select(o => o.Name.ToString()).ToList() 
+      ?? new List<string>();
 
     private string gameLaunchFolder;
     public string GameLaunchFolder

@@ -52,7 +52,7 @@
 
     <!-- Row 3 -->
     <Expander Name="NewInstallConfigs" Header="Configuration" Grid.Row="3" Grid.ColumnSpan="3" Margin="5,5,5,5" Background="LightGray">
-      <Grid Background="White">
+      <Grid Name="NewInstallConfigGrid" Background="White">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
@@ -62,8 +62,8 @@
           <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <CheckBox Name="IncludeDDrawFix" Content="Include _DDraw Fix" Margin="5,5,5,5" />
-        <CheckBox Name="Include60FPSFix" Content="Include 60_FPS Fix" Margin="5,5,5,5" Grid.Column="1" />
+        <CheckBox Name="IncludeDDrawFix" Content="Include _DDraw Fix" Margin="5,5,5,5" Tag="DDrawFix" />
+        <CheckBox Name="Include60FPSFix" Content="Include 60_FPS Fix" Margin="5,5,5,5" Grid.Column="1" Tag="SixtyFpsFix" />
       </Grid>
     </Expander>
 

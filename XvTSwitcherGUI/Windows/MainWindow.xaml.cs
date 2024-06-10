@@ -6,6 +6,7 @@ using XvTSwitcherGUI.Installations;
 using System.Linq;
 using System.Windows.Input;
 using System;
+using XvTSwitcherGUI.ModLibrary;
 
 namespace XvTSwitcherGUI.Windows
 {
@@ -89,19 +90,33 @@ namespace XvTSwitcherGUI.Windows
           if (isExisting == false)
             CopyDirectory(sourceDirectory, installPath, true, true);
 
-          if (dialog.Include60FPSFix.IsChecked ?? false)
-            CopyMod(ModLibrary.SixtyFPSFix, installPath);
+          //if (dialog.Include60FPSFix.IsChecked ?? false)
+          //  CopyMod(ModLibrary.SixtyFPSFix, installPath);
 
-          if (dialog.IncludeDDrawFix.IsChecked ?? false)
-            CopyMod(ModLibrary.DDrawFix, installPath);
+          //if (dialog.IncludeDDrawFix.IsChecked ?? false)
+          //  CopyMod(ModLibrary.DDrawFix, installPath);
 
           var newInstall = new XvTInstall()
           {
             Name = installName,
-            Filepath = installPath,
-            Has60FPSFix = dialog.Include60FPSFix.IsChecked ?? false,
-            HasDDrawFix = dialog.IncludeDDrawFix.IsChecked ?? false
+            Filepath = installPath
           };
+
+          dialog.NewInstallConfigGrid.Children.OfType<System.Windows.Controls.CheckBox>().ToList().ForEach(o =>
+          {
+            if (o.IsChecked ?? false)
+            {
+              var modEnum = o.Tag.ToString().ToEnum<XvTMods>();
+
+              XvTModLibrary.CopyMod(modEnum, installPath);
+
+              newInstall.ActiveModsList.Add(new XvTModLibrary()
+              {
+                Name = modEnum,
+                IsInstalled = true
+              });
+            }
+          });
 
           InstallationList.AddOrUpdate(newInstall);
         }
@@ -111,31 +126,6 @@ namespace XvTSwitcherGUI.Windows
           Mouse.OverrideCursor = null;
         }
       }
-    }
-
-    private enum ModLibrary
-    {
-      DDrawFix,
-      SixtyFPSFix
-    }
-
-    private void CopyMod(ModLibrary modEnum, string targetPath)
-    {
-      var modSource = string.Empty;
-      switch (modEnum)
-      {
-        case ModLibrary.DDrawFix:
-          modSource = "./ModLibrary/DDrawFix/";
-          break;
-        case ModLibrary.SixtyFPSFix:
-          modSource = "./ModLibrary/60FPSFix/";          
-          break;
-      }
-
-      Directory.GetFiles(modSource).ToList().ForEach(f => {
-        File.Copy(f, $"{targetPath}/{Path.GetFileName(f)}");
-        File.Copy(f, $"{targetPath}/BalanceOfPower/{Path.GetFileName(f)}");
-      });
     }
 
     private void ShowLoadingAnimation()

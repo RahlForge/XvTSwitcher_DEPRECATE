@@ -104,6 +104,7 @@
     <Compile Include="Installations\IXvTInstall.cs" />
     <Compile Include="Installations\XvTInstall.cs" />
     <Compile Include="Installations\XvTInstallationList.cs" />
+    <Compile Include="ModLibrary\XvTModLibrary.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Windows\ActivateInstallConfirmation.xaml.cs">
       <DependentUpon>ActivateInstallConfirmation.xaml</DependentUpon>
@@ -186,10 +187,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="ModLibrary\60FPSFix\dinput.dll">
+    <Content Include="ModLibrary\SixtyFpsFix\dinput.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ModLibrary\60FPSFix\Hook_60FPS.dll">
+    <Content Include="ModLibrary\SixtyFpsFix\Hook_60FPS.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ModLibrary\DDrawFix\ddraw.dll">
@@ -204,7 +205,7 @@
     <Resource Include="ModLibrary\DDrawFix\readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="ModLibrary\60FPSFix\hook_60FPS_Readme.txt">
+    <Resource Include="ModLibrary\SixtyFpsFix\hook_60FPS_Readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
