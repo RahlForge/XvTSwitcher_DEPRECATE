@@ -7,11 +7,12 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XvTSwitcherGUI.Installations
+namespace XvTSwitcherGUI.Models
 {
-  public class XvTInstallationList : INotifyPropertyChanged
-  {   
-    public ObservableCollection<XvTInstall> Installations { get; set; } = new ObservableCollection<XvTInstall>(); 
+  [Obsolete("XvTInstallationsList is deprecated. Use the InstallationsViewModel.")]
+  public class XvTInstallationList : INotifyPropertyChanged 
+  {
+    public ObservableCollection<XvTInstallModel> Installations { get; set; } = new ObservableCollection<XvTInstallModel>(); 
 
     public string ActiveInstallation => Installations.FirstOrDefault(o => o.IsActive)?.Name ?? string.Empty;
     public List<string> ActiveInstallationMods => 
@@ -61,10 +62,10 @@ namespace XvTSwitcherGUI.Installations
       if (Installations.Any(o => o.Name == name))
         Installations.Where(o => o.Name == name).ToList().ForEach(o => { o.Filepath = filepath; });
       else
-        Installations.Add(new XvTInstall(name, filepath));
+        Installations.Add(new XvTInstallModel(name, filepath));
     }
 
-    public void AddOrUpdate(XvTInstall newInstall)
+    public void AddOrUpdate(XvTInstallModel newInstall)
     {
       if (Installations.Any(o => o.Name == newInstall.Name || o.Filepath == newInstall.Filepath))
       {
@@ -73,7 +74,7 @@ namespace XvTSwitcherGUI.Installations
           o = newInstall;
         });
 
-        Installations = (ObservableCollection<XvTInstall>)Installations.Distinct();
+        Installations = (ObservableCollection<XvTInstallModel>)Installations.Distinct();
       }
       else
         Installations.Add(newInstall);

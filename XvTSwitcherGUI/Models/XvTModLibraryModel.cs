@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XvTSwitcherGUI.ModLibrary
+namespace XvTSwitcherGUI.Models
 {
   public enum XvTMods
   {
@@ -13,14 +13,15 @@ namespace XvTSwitcherGUI.ModLibrary
     SixtyFpsFix
   }
 
-  public class XvTModLibrary
+  public class XvTModLibraryModel
   {
     const string MOD_LIBRARY = "./ModLibrary/";
 
-    public XvTMods Name { get; set; }
+    public XvTMods ModId { get; set; }
+    public string Name { get; set; }
     public bool IsInstalled { get; set; }
 
-    public XvTModLibrary() { }
+    public XvTModLibraryModel() { }
 
     public static void CopyMod(XvTMods modEnum, string targetPath)
     {

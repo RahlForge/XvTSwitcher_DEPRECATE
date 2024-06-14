@@ -101,26 +101,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\ButtonHelper.cs" />
-    <Compile Include="Installations\IXvTInstall.cs" />
-    <Compile Include="Installations\XvTInstall.cs" />
-    <Compile Include="Installations\XvTInstallationList.cs" />
-    <Compile Include="ModLibrary\XvTModLibrary.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="Windows\ActivateInstallConfirmation.xaml.cs">
+    <Compile Include="Helpers\ConversionHelper.cs" />
+    <Compile Include="Models\XvTBaseConfigurationModel.cs" />
+    <Compile Include="Models\XvTInstallModel.cs" />
+    <Compile Include="Models\XvTInstallationListModel.cs" />
+    <Compile Include="Models\XvTModLibraryModel.cs" />
+    <Compile Include="ViewModels\InstallationsViewModel.cs" />
+    <Compile Include="Views\ActivateInstallConfirmation.xaml.cs">
       <DependentUpon>ActivateInstallConfirmation.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\NewInstall.xaml.cs">
+    <Compile Include="Views\Converters\Converters.cs" />
+    <Compile Include="Views\NewInstall.xaml.cs">
       <DependentUpon>NewInstall.xaml</DependentUpon>
     </Compile>
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\ActivateInstallConfirmation.xaml">
+    <Page Include="Views\ActivateInstallConfirmation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\MainWindow.xaml">
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -128,11 +130,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Windows\MainWindow.xaml.cs">
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Windows\NewInstall.xaml">
+    <Page Include="Views\NewInstall.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

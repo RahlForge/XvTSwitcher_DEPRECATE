@@ -2,11 +2,11 @@
 using System.IO;
 using Newtonsoft.Json;
 using System.Windows.Forms;
-using XvTSwitcherGUI.Installations;
+using XvTSwitcherGUI.Models;
 using System.Linq;
 using System.Windows.Input;
-using System;
-using XvTSwitcherGUI.ModLibrary;
+using XvTSwitcherGUI.Helpers;
+using XvTSwitcherGUI.ViewModels;
 
 namespace XvTSwitcherGUI.Windows
 {
@@ -20,17 +20,45 @@ namespace XvTSwitcherGUI.Windows
     private const string INSTALLATIONS_JSON = "installations.json";
     private const string BASE_GAME = "BaseGame";
 
-    private XvTInstallationList InstallationList { get; set; } = new XvTInstallationList();
-    private string PriorActiveInstallation { get; set; } = string.Empty;
-    private XvTInstall ActiveInstall => InstallationList.Installations.FirstOrDefault(o => o.IsActive);
+    private InstallationsViewModel ViewModel;
+    private XvTInstallationList InstallationList = new XvTInstallationList();
+    private XvTInstallModel ActiveInstall => InstallationList.Installations.FirstOrDefault(o => o.IsActive);
 
     public MainWindow()
     {
       InitializeComponent();
 
       if (File.Exists(INSTALLATIONS_JSON) && new FileInfo(INSTALLATIONS_JSON).Length > 0)
-        InstallationList = JsonConvert.DeserializeObject<XvTInstallationList>(File.ReadAllText(INSTALLATIONS_JSON));      
-    }    
+      {
+        if (ConversionHelper.TryDeserializeFromFile(INSTALLATIONS_JSON, out InstallationList) == false)
+        {
+          if (ConversionHelper.TryDeserializeFromFile(INSTALLATIONS_JSON, out ViewModel) == false)
+          {
+            System.Windows.MessageBox.Show(this, $"Cannot read configuration from {INSTALLATIONS_JSON}", "Installations Read Error",
+              MessageBoxButton.OK, MessageBoxImage.Error);
+            Close();
+          }
+        }
+        else
+          WriteInstallationListToViewModel();        
+      }
+      else
+        ViewModel = new InstallationsViewModel();
+    }
+
+    private void WriteInstallationListToViewModel()
+    {
+      ViewModel = new InstallationsViewModel(
+        new XvTBaseConfigurationModel()
+        {
+          GameLaunchFolder = InstallationList.GameLaunchFolder,
+          HasSteamIntegration = InstallationList.HasSteamIntegration,
+          SteamLaunchFolder = InstallationList.SteamLaunchFolder
+        },
+        InstallationList.Installations
+      );
+    }
+
 
     private bool IsCrossPlatform => HasSteamIntegration.IsChecked ?? false;
 
@@ -96,7 +124,7 @@ namespace XvTSwitcherGUI.Windows
           //if (dialog.IncludeDDrawFix.IsChecked ?? false)
           //  CopyMod(ModLibrary.DDrawFix, installPath);
 
-          var newInstall = new XvTInstall()
+          var newInstall = new XvTInstallModel()
           {
             Name = installName,
             Filepath = installPath
@@ -108,13 +136,16 @@ namespace XvTSwitcherGUI.Windows
             {
               var modEnum = o.Tag.ToString().ToEnum<XvTMods>();
 
-              XvTModLibrary.CopyMod(modEnum, installPath);
+              XvTModLibraryModel.CopyMod(modEnum, installPath);
 
-              newInstall.ActiveModsList.Add(new XvTModLibrary()
+              var mod = new XvTModLibraryModel()
               {
-                Name = modEnum,
+                ModId = modEnum,
+                Name = modEnum.ToString(),
                 IsInstalled = true
-              });
+              };
+
+              newInstall.ActiveModsList.Add(mod);
             }
           });
 
@@ -214,7 +245,7 @@ namespace XvTSwitcherGUI.Windows
     {
       try
       {
-        var newActiveInstall = (XvTInstall)InstallationsGrid.SelectedItem;
+        var newActiveInstall = (XvTInstallModel)InstallationsGrid.SelectedItem;
         var confirmDialog = new ActivateInstallConfirmation()
         {
           Owner = this
@@ -297,12 +328,12 @@ namespace XvTSwitcherGUI.Windows
 
     private void Save()
     {
-      File.WriteAllText(INSTALLATIONS_JSON, JsonConvert.SerializeObject(InstallationList, Formatting.Indented));
+      File.WriteAllText(INSTALLATIONS_JSON, JsonConvert.SerializeObject(ViewModel, Formatting.Indented));
     }
 
     private void RemoveInstall_Click(object sender, RoutedEventArgs e)
     {
-      InstallationList.Installations.Remove((XvTInstall)InstallationsGrid.SelectedItem);
+      InstallationList.Installations.Remove((XvTInstallModel)InstallationsGrid.SelectedItem);
       Save();
     }
 

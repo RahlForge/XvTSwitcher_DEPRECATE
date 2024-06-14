@@ -1,19 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using XvTSwitcherGUI.ModLibrary;
 
-namespace XvTSwitcherGUI.Installations
+namespace XvTSwitcherGUI.Models
 {
-  public class XvTInstall : IXvTInstall, INotifyPropertyChanged
+  public class XvTInstallModel : INotifyPropertyChanged
   {
+    #region INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
 
+    protected void OnPropertyChanged([CallerMemberName] string name = null)
+    {
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+    #endregion
+
     private bool isActive;
+    private string name;
+    private string filepath;
+    private List<XvTModLibraryModel> activeModsList;
+
     public bool IsActive
     {
       get => isActive;
@@ -23,8 +29,7 @@ namespace XvTSwitcherGUI.Installations
         OnPropertyChanged("IsActive");
       }
     }
-
-    private string name;
+        
     public string Name 
     { 
       get => name;
@@ -34,8 +39,7 @@ namespace XvTSwitcherGUI.Installations
         OnPropertyChanged("Name");
       } 
     }
-
-    private string filepath;
+        
     public string Filepath 
     {
       get => filepath;
@@ -45,11 +49,15 @@ namespace XvTSwitcherGUI.Installations
         OnPropertyChanged("Filepath");
       } 
     }
-
-    private List<XvTModLibrary> activeModsList;
-    public List<XvTModLibrary> ActiveModsList
+        
+    public List<XvTModLibraryModel> ActiveModsList
     {
-      get => activeModsList ?? new List<XvTModLibrary>();
+      get
+      {
+        if (activeModsList == null)
+          activeModsList = new List<XvTModLibraryModel>();
+        return activeModsList;
+      }
       set
       {
         activeModsList = value;
@@ -57,17 +65,12 @@ namespace XvTSwitcherGUI.Installations
       }
     }
 
-    public XvTInstall() { }
+    public XvTInstallModel() { }
 
-    public XvTInstall(string name, string filepath)
+    public XvTInstallModel(string name, string filepath)
     {
       Name = name;
       Filepath = filepath;
-    }
-
-    protected void OnPropertyChanged([CallerMemberName] string name = null)
-    {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
   }
 }

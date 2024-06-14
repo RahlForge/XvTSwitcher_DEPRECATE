@@ -4,13 +4,19 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:local="clr-namespace:XvTSwitcherGUI.Windows" xmlns:installations="clr-namespace:XvTSwitcherGUI.Installations"   
-  d:DataContext="{d:DesignInstance Type=installations:XvTInstallationList}"
+  xmlns:local="clr-namespace:XvTSwitcherGUI.Windows" 
+  xmlns:viewModels="clr-namespace:XvTSwitcherGUI.ViewModels"   
+  d:DataContext="{d:DesignInstance Type=viewModels:InstallationsViewModel}"
+  xmlns:cns="clr-namespace:XvTSwitcherGUI.Views.Converters"
   mc:Ignorable="d"
   Title="XvT Switcher" Height="450" Width="800"
   Closing="Window_Closing"
   ContentRendered="Window_ContentRendered"
   SizeToContent="WidthAndHeight">
+  
+  <Window.Resources>
+    <cns:TextToEnabledConverter x:Key="textEnable"/>
+  </Window.Resources>
 
   <Grid Margin="10">
     <Grid.RowDefinitions>
@@ -43,15 +49,20 @@
 
     <!-- Row 2 -->
     <CheckBox Name="HasSteamIntegration" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,3,5,5" Content="Steam Install" 
-              IsChecked="{Binding HasSteamIntegration}" IsEnabled="{Binding HasInstallations}" 
+              IsChecked="{Binding HasSteamIntegration}" 
+              IsEnabled="{Binding ElementName=GameLaunchFolder,Path=Text,Converter={StaticResource textEnable}}" 
               VerticalAlignment="Center"/>
-    <TextBox Name="SteamDirectory" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Margin="5,5,0,5" Height="Auto" IsEnabled="{Binding HasSteamIntegration}"
-             Text="{Binding SteamLaunchFolder}" ToolTip="Path to steamapps/common XvT launch directory" />
-    <Button Name="BrowseSteamDirectory" Grid.Row="2" Grid.Column="5" Margin="0,5,5,5" Padding="6,0,6,0" IsEnabled="{Binding HasSteamIntegration}" 
+    <TextBox Name="SteamDirectory" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Margin="5,5,0,5" Height="Auto" 
+             IsEnabled="{Binding HasSteamIntegration}"
+             Text="{Binding SteamLaunchFolder}" 
+             ToolTip="Path to steamapps/common XvT launch directory" />
+    <Button Name="BrowseSteamDirectory" Grid.Row="2" Grid.Column="5" Margin="0,5,5,5" Padding="6,0,6,0" 
+            IsEnabled="{Binding HasSteamIntegration}" 
             Click="BrowseSteamDirectory_Click">...</Button>
 
     <!-- Row 3 -->
-    <Button Name="DetectExistingInstalls" Grid.Row="3" Margin="5,5,5,5" Click="DetectExistingInstalls_Click" Width="Auto" Visibility="Hidden">_Detect Existing Installs</Button>
+    <Button Name="DetectExistingInstalls" Grid.Row="3" Margin="5,5,5,5" Click="DetectExistingInstalls_Click" Width="Auto" 
+            Visibility="Hidden">_Detect Existing Installs</Button>
 
     <!-- Row 4 -->
     <Label Content="Installations" Grid.Row="4" Margin="0,3,0,2" Height="Auto" />
@@ -60,6 +71,7 @@
               HorizontalAlignment="Stretch"
               Width="Auto"
               ItemsSource="{Binding Installations}" AutoGenerateColumns="False" SelectionMode="Single" IsReadOnly="True"
+              IsEnabled="{Binding ElementName=GameLaunchFolder,Path=Text,Converter={StaticResource textEnable}}"
               ScrollViewer.CanContentScroll="True" 
               ScrollViewer.IsDeferredScrollingEnabled="True"
               ScrollViewer.VerticalScrollBarVisibility="Auto" 
@@ -75,7 +87,7 @@
         <DataGridTextColumn Header="Filepath" Binding="{Binding Filepath}" Width="Auto" />
       </DataGrid.Columns>
     </DataGrid>
-    <StackPanel Grid.Row="4" Grid.Column="4">
+    <StackPanel Grid.Row="4" Grid.Column="4" IsEnabled="{Binding ElementName=GameLaunchFolder,Path=Text,Converter={StaticResource textEnable}}">
       <Button Name="ActivateInstall" Margin="5,5,5,5" HorizontalAlignment="Left" 
               Width="Auto" Click="ActivateInstall_Click" Padding="5,1,5,1">A_ctivate</Button>
       <Button Name="AddInstall" Margin="5,5,5,5" 
@@ -91,10 +103,17 @@
               Height="{Binding ActualHeight, ElementName=ActivateInstall}"
               HorizontalAlignment="Left" Click="RemoveInstall_Click">Re_move</Button>
     </StackPanel>
+    
     <!-- Row 5 -->
     <Label Content="Active Mods" Grid.Row="5" Grid.Column="4" />
-    <ListBox Name="ActiveModsList" Grid.Row="6" Grid.Column="4" 
-             Margin="5,5,5,5" ItemsSource="{Binding ActiveInstallationMods}" />
+    <ListBox Name="ActiveModsList" Grid.Row="6" Grid.Column="4" Margin="5,5,5,5" 
+             ItemsSource="{Binding ActiveInstallMods}">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding Name}" />
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
 
     <!-- Span entire grid -->
     <Image Name="LoadingAnimation" Source="../Images/xwingloading.gif" Grid.RowSpan="7" Grid.ColumnSpan="5" Height="75" Width="75" 
